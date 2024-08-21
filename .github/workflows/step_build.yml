@@ -17,6 +17,9 @@ jobs:
           node-version: '20'
           cache: 'yarn'
 
+      - name: Remove tools directory
+        run: rm -rf tools
+
       - name: Install dependencies
         run: yarn install --immutable --prefer-offline
 
