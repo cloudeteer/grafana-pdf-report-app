@@ -1,0 +1,109 @@
+name: build
+run-name: Build and Unit Tests
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable --prefer-offline
+
+      - name: Check types
+        run: yarn typecheck
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Unit tests
+        run: yarn test:ci
+
+      - name: Build frontend
+        run: yarn build
+
+      - name: Check for backend
+        id: check-for-backend
+        run: |
+          if [ -f "Magefile.go" ]
+          then
+            echo "has-backend=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Install chrome as we will use it in e2e tests
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          install-dependencies: true
+
+      - name: Start headless chrome for remote tests
+        run: >-
+          chrome
+          --remote-debugging-port=44251
+          --no-sandbox
+          --disable-gpu
+          --no-first-run
+          --no-default-browser-check
+          --headless
+          --hide-scrollbars
+          --mute-audio
+          --disable-background-networking
+          --enable-features=NetworkService,NetworkServiceInProcess
+          --disable-background-timer-throttling
+          --disable-backgrounding-occluded-windows
+          --disable-breakpad
+          --disable-client-side-phishing-detection
+          --disable-default-apps
+          --disable-dev-shm-usage
+          --disable-extensions
+          --disable-features=site-per-process,Translate,BlinkGenPropertyTrees
+          --disable-hang-monitor
+          --disable-ipc-flooding-protection
+          --disable-popup-blocking
+          --disable-prompt-on-repost
+          --disable-renderer-backgrounding
+          --disable-sync
+          --force-color-profile=srgb
+          --metrics-recording-only
+          --safebrowsing-disable-auto-update
+          --enable-automation
+          --password-store=basic
+          --use-mock-keychain &
+          
+          echo "CHROME_REMOTE_URL=ws://localhost:44251" >> $GITHUB_ENV
+
+      - name: Setup Go environment
+        if: steps.check-for-backend.outputs.has-backend == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Test backend
+        if: steps.check-for-backend.outputs.has-backend == 'true'
+        uses: magefile/mage-action@v3
+        with:
+          version: latest
+          args: coverage
+
+      - name: Build backend
+        if: steps.check-for-backend.outputs.has-backend == 'true'
+        uses: magefile/mage-action@v3
+        with:
+          version: latest
+          args: build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+          retention-days: 1
