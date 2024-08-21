@@ -20,15 +20,17 @@ type mockCallResourceResponseSender struct {
 	response *backend.CallResourceResponse
 }
 
-// Send sets the received *backend.CallResourceResponse to s.response
+// Send sets the received *backend.CallResourceResponse to s.response.
 func (s *mockCallResourceResponseSender) Send(response *backend.CallResourceResponse) error {
 	s.response = response
+
 	return nil
 }
 
-// Test report resource
+// Test report resource.
 func TestReportResource(t *testing.T) {
 	var execPath string
+
 	locations := []string{
 		// Mac
 		"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -62,9 +64,11 @@ func TestReportResource(t *testing.T) {
 	if err != nil {
 		t.Fatalf("new app: %s", err)
 	}
+
 	if inst == nil {
 		t.Fatal("inst must not be nil")
 	}
+
 	app, ok := inst.(*App)
 	if !ok {
 		t.Fatal("inst must be of type *App")
@@ -102,6 +106,7 @@ func TestReportResource(t *testing.T) {
 				Method: http.MethodGet,
 				Path:   "report?dashUid=testDash",
 			}, &r)
+
 			So(repDashName, ShouldEqual, "testDash")
 		})
 

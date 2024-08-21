@@ -64,7 +64,7 @@ func NewDashboardReporterApp(ctx context.Context, settings backend.AppInstanceSe
 		return nil, fmt.Errorf("error loading config: %w", err)
 	}
 
-	app.ctxLogger.Info(fmt.Sprintf("starting plugin with initial config: %s", app.conf.String()))
+	app.ctxLogger.Info("starting plugin with initial config: " + app.conf.String())
 
 	// Make a new HTTP client
 	if app.httpClient, err = httpclient.New(app.conf.HTTPClientOptions); err != nil {
@@ -77,13 +77,13 @@ func NewDashboardReporterApp(ctx context.Context, settings backend.AppInstanceSe
 	switch app.conf.RemoteChromeURL {
 	case "":
 		chromeInstance, err = chrome.NewLocalBrowserInstance(
-			context.Background(),
+			context.Background(), //nolint:contextcheck // context is cancelled after app instance is created.
 			app.ctxLogger,
 			app.conf.HTTPClientOptions.TLS.InsecureSkipVerify,
 		)
 	default:
 		chromeInstance, err = chrome.NewRemoteBrowserInstance(
-			context.Background(),
+			context.Background(), //nolint:contextcheck // context is cancelled after app instance is created.
 			app.ctxLogger,
 			app.conf.RemoteChromeURL,
 		)

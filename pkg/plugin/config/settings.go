@@ -15,7 +15,7 @@ import (
 const SaToken = "saToken"
 
 // DefaultConfig Always start with a default config so that when the plugin is not provisioned
-// with a config, we will still have "non-null" config to work with
+// with a config, we will still have "non-null" config to work with.
 var DefaultConfig = Config{
 	Theme:              "light",
 	Orientation:        "portrait",
@@ -34,23 +34,23 @@ var DefaultConfig = Config{
 	},
 }
 
-// Config contains plugin settings
+// Config contains plugin settings.
 type Config struct {
-	AppURL             string `json:"appUrl"             env:"GF_REPORTER_PLUGIN_APP_URL, overwrite"`
-	SkipTLSCheck       bool   `json:"skipTlsCheck"       env:"GF_REPORTER_PLUGIN_SKIP_TLS_CHECK, overwrite"`
-	Theme              string `json:"theme"              env:"GF_REPORTER_PLUGIN_REPORT_THEME, overwrite"`
-	Orientation        string `json:"orientation"        env:"GF_REPORTER_PLUGIN_REPORT_ORIENTATION, overwrite"`
-	Layout             string `json:"layout"             env:"GF_REPORTER_PLUGIN_REPORT_LAYOUT, overwrite"`
-	DashboardMode      string `json:"dashboardMode"      env:"GF_REPORTER_PLUGIN_REPORT_DASHBOARD_MODE, overwrite"`
-	TimeZone           string `json:"timeZone"           env:"GF_REPORTER_PLUGIN_REPORT_TIMEZONE, overwrite"`
-	EncodedLogo        string `json:"logo"               env:"GF_REPORTER_PLUGIN_REPORT_LOGO, overwrite"`
-	MaxBrowserWorkers  int    `json:"maxBrowserWorkers"  env:"GF_REPORTER_PLUGIN_MAX_BROWSER_WORKERS, overwrite"`
-	MaxRenderWorkers   int    `json:"maxRenderWorkers"   env:"GF_REPORTER_PLUGIN_MAX_RENDER_WORKERS, overwrite"`
-	RemoteChromeURL    string `json:"remoteChromeUrl"    env:"GF_REPORTER_PLUGIN_REMOTE_CHROME_URL, overwrite"`
-	HeaderTemplate     string `json:"headerTemplate"     env:"GF_REPORTER_PLUGIN_HEADER_TEMPLATE, overwrite"`
-	ReportTemplate     string `json:"reportTemplate"     env:"GF_REPORTER_PLUGIN_REPORT_TEMPLATE, overwrite"`
-	FooterTemplate     string `json:"footerTemplate"     env:"GF_REPORTER_PLUGIN_FOOTER_TEMPLATE, overwrite"`
-	RequiredPermission string `json:"requiredPermission" env:"GF_REPORTER_PLUGIN_REQUIRED_PERMISSION, overwrite"`
+	AppURL             string `env:"GF_REPORTER_PLUGIN_APP_URL, overwrite"               json:"appUrl"`
+	SkipTLSCheck       bool   `env:"GF_REPORTER_PLUGIN_SKIP_TLS_CHECK, overwrite"        json:"skipTlsCheck"`
+	Theme              string `env:"GF_REPORTER_PLUGIN_REPORT_THEME, overwrite"          json:"theme"`
+	Orientation        string `env:"GF_REPORTER_PLUGIN_REPORT_ORIENTATION, overwrite"    json:"orientation"`
+	Layout             string `env:"GF_REPORTER_PLUGIN_REPORT_LAYOUT, overwrite"         json:"layout"`
+	DashboardMode      string `env:"GF_REPORTER_PLUGIN_REPORT_DASHBOARD_MODE, overwrite" json:"dashboardMode"`
+	TimeZone           string `env:"GF_REPORTER_PLUGIN_REPORT_TIMEZONE, overwrite"       json:"timeZone"`
+	EncodedLogo        string `env:"GF_REPORTER_PLUGIN_REPORT_LOGO, overwrite"           json:"logo"`
+	MaxBrowserWorkers  int    `env:"GF_REPORTER_PLUGIN_MAX_BROWSER_WORKERS, overwrite"   json:"maxBrowserWorkers"`
+	MaxRenderWorkers   int    `env:"GF_REPORTER_PLUGIN_MAX_RENDER_WORKERS, overwrite"    json:"maxRenderWorkers"`
+	RemoteChromeURL    string `env:"GF_REPORTER_PLUGIN_REMOTE_CHROME_URL, overwrite"     json:"remoteChromeUrl"`
+	HeaderTemplate     string `env:"GF_REPORTER_PLUGIN_HEADER_TEMPLATE, overwrite"       json:"headerTemplate"`
+	ReportTemplate     string `env:"GF_REPORTER_PLUGIN_REPORT_TEMPLATE, overwrite"       json:"reportTemplate"`
+	FooterTemplate     string `env:"GF_REPORTER_PLUGIN_FOOTER_TEMPLATE, overwrite"       json:"footerTemplate"`
+	RequiredPermission string `env:"GF_REPORTER_PLUGIN_REQUIRED_PERMISSION, overwrite"   json:"requiredPermission"`
 	IncludePanelIDs    []int
 	ExcludePanelIDs    []int
 
@@ -61,7 +61,7 @@ type Config struct {
 	Token string
 }
 
-// String implements the stringer interface of Config
+// String implements the stringer interface of Config.
 func (c *Config) String() string {
 	var encodedLogo string
 	if c.EncodedLogo != "" {
@@ -69,6 +69,7 @@ func (c *Config) String() string {
 	}
 
 	includedPanelIDs := "all"
+
 	if len(c.IncludePanelIDs) > 0 {
 		panelIDs := make([]string, len(c.IncludePanelIDs))
 		for index, id := range c.IncludePanelIDs {
@@ -79,6 +80,7 @@ func (c *Config) String() string {
 	}
 
 	excludedPanelIDs := "none"
+
 	if len(c.ExcludePanelIDs) > 0 {
 		panelIDs := make([]string, len(c.ExcludePanelIDs))
 		for index, id := range c.ExcludePanelIDs {
@@ -104,7 +106,7 @@ func (c *Config) String() string {
 	)
 }
 
-// Load loads the plugin settings from data sent by provisioned config or from Grafana UI
+// Load loads the plugin settings from data sent by provisioned config or from Grafana UI.
 func Load(ctx context.Context, settings backend.AppInstanceSettings) (Config, error) {
 	config := DefaultConfig
 
@@ -123,7 +125,7 @@ func Load(ctx context.Context, settings backend.AppInstanceSettings) (Config, er
 	var err error
 
 	if err = json.Unmarshal(settings.JSONData, &config); err != nil {
-		return Config{}, err
+		return Config{}, fmt.Errorf("error in unmarshalling plugin settings: %w", err)
 	}
 
 	// Override provisioned config from env vars, if set
@@ -135,6 +137,7 @@ func Load(ctx context.Context, settings backend.AppInstanceSettings) (Config, er
 	if config.HTTPClientOptions, err = settings.HTTPClientOptions(ctx); err != nil {
 		return Config{}, fmt.Errorf("error in http client options: %w", err)
 	}
+
 	config.HTTPClientOptions.TLS = &httpclient.TLSOptions{InsecureSkipVerify: config.SkipTLSCheck}
 
 	return config, nil

@@ -28,7 +28,7 @@ func (d *Dashboard) fetchAPI(ctx context.Context) (APIDashboardData, error) {
 	req.Header.Add("Authorization", "Bearer "+d.saToken)
 
 	// Send the request
-	resp, err := d.httpClient.Do(req)
+	resp, err := d.httpClient.Do(req) //nolint:bodyclose //https://github.com/timakin/bodyclose/issues/30
 	if err != nil {
 		return APIDashboardData{}, fmt.Errorf("error sending request: %w", err)
 	}

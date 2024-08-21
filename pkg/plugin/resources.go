@@ -13,7 +13,9 @@ import (
 )
 
 // handleReport handles creating a PDF report from a given dashboard UID
-// GET /api/plugins/cloudeteer-pdfreport-app/resources/report
+// GET /api/plugins/cloudeteer-pdfreport-app/resources/report.
+//
+//nolint:gocognit,cyclop
 func (app *App) handleReport(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -125,7 +127,7 @@ func (app *App) handleReport(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	ctxLogger.Info(fmt.Sprintf("generate report using config: %s", conf.String()))
+	ctxLogger.Info("generate report using config: " + conf.String())
 
 	var grafanaAppURL string
 	if conf.AppURL != "" {
@@ -141,6 +143,7 @@ func (app *App) handleReport(w http.ResponseWriter, req *http.Request) {
 	}
 
 	grafanaAppURL = strings.TrimSuffix(grafanaAppURL, "/")
+
 	saToken, err := grafanaConfig.PluginAppClientSecret()
 	if err != nil {
 		ctxLogger.Error("failed to get plugin app client secret", "err", err)
@@ -187,8 +190,10 @@ func (app *App) handleReport(w http.ResponseWriter, req *http.Request) {
 // handleHealth is an example HTTP GET resource that returns an OK response.
 func (app *App) handleHealth(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Add("Content-Type", "text/plan")
+
 	if _, err := w.Write([]byte("OK")); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
 

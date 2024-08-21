@@ -11,7 +11,7 @@ type HTML struct {
 	Footer string
 }
 
-// Data structures used inside HTML template
+// Data structures used inside HTML template.
 type templateData struct {
 	Date string
 

@@ -12,9 +12,10 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
-// New creates a new instance of the Dashboard struct
+// New creates a new instance of the Dashboard struct.
 func New(logger log.Logger, conf config.Config, httpClient *http.Client, chromeInstance chrome.Instance,
-	pools worker.Pools, grafanaBaseURL string, uid string, values url.Values, saToken string) *Dashboard {
+	pools worker.Pools, grafanaBaseURL string, uid string, values url.Values, saToken string,
+) *Dashboard {
 	return &Dashboard{
 		logger,
 		conf,

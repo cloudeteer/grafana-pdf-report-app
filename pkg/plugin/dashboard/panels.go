@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"slices"
@@ -9,7 +10,7 @@ import (
 )
 
 // Regex for parsing X and Y co-ordinates from CSS
-// Scales for converting width and height to Grafana units
+// Scales for converting width and height to Grafana units.
 var translateRegex = regexp.MustCompile(`translate\((?P<X>\d+)px, (?P<Y>\d+)px\)`)
 
 const (
@@ -17,11 +18,12 @@ const (
 	scaleHeight = 36
 )
 
+//nolint:cyclop
 func (d *Dashboard) collectPanelsFromData(browserData BrowserData) ([]Panel, error) {
 	panels := make([]Panel, 0, len(browserData.PanelData))
 
 	if browserData.PanelData == nil {
-		return nil, fmt.Errorf("apiData.RowOrPanels or browserData.PanelData is nil")
+		return nil, errors.New("apiData.RowOrPanels or browserData.PanelData is nil")
 	}
 
 	for _, browserPanel := range browserData.PanelData {

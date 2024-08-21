@@ -81,14 +81,14 @@ type APIDashboardData struct {
 	RowOrPanels    []RowOrPanel `json:"panels"`
 }
 
-// RowOrPanel represents a container for Panels
+// RowOrPanel represents a container for Panels.
 type RowOrPanel struct {
 	Panel
 	Collapsed bool    `json:"collapsed"`
 	Panels    []Panel `json:"panels"`
 }
 
-// Panel represents a Grafana dashboard panel
+// Panel represents a Grafana dashboard panel.
 type Panel struct {
 	ID      int     `json:"id"`
 	Type    string  `json:"type"`
@@ -96,7 +96,7 @@ type Panel struct {
 	GridPos GridPos `json:"gridPos"`
 }
 
-// GridPos represents a Grafana dashboard panel position
+// GridPos represents a Grafana dashboard panel position.
 type GridPos struct {
 	H float64 `json:"h"`
 	W float64 `json:"w"`
@@ -104,27 +104,27 @@ type GridPos struct {
 	Y float64 `json:"y"`
 }
 
-// IsSingleStat returns true if panel is of type SingleStat
+// IsSingleStat returns true if panel is of type SingleStat.
 func (p Panel) IsSingleStat() bool {
 	return p.Is(SingleStat)
 }
 
-// IsPartialWidth If panel has width less than total allowable width
+// IsPartialWidth If panel has width less than total allowable width.
 func (p Panel) IsPartialWidth() bool {
 	return (p.GridPos.W < 24)
 }
 
-// Width returns the width of the panel
+// Width returns the width of the panel.
 func (p Panel) Width() float64 {
 	return float64(p.GridPos.W) * 0.04
 }
 
-// Height returns the height of the panel
+// Height returns the height of the panel.
 func (p Panel) Height() float64 {
 	return float64(p.GridPos.H) * 0.04
 }
 
-// Is returns true if panel is of type t
+// Is returns true if panel is of type t.
 func (p Panel) Is(t PanelType) bool {
 	return p.Type == t.String()
 }

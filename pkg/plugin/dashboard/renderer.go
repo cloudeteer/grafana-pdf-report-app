@@ -54,6 +54,7 @@ func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, er
 	if d.conf.Layout == "grid" {
 		width := int(panel.GridPos.W * 100)
 		height := int(panel.GridPos.H * 36)
+
 		dashURLValues.Add("width", strconv.Itoa(width))
 		dashURLValues.Add("height", strconv.Itoa(height))
 	} else {
@@ -78,7 +79,7 @@ func (d *Dashboard) fetchPNGFromGrafanaAPI(ctx context.Context, panelURL string)
 	d.logger.Debug("fetching panel PNG", "url", panelURL)
 
 	// Send the request
-	resp, err := d.httpClient.Do(req)
+	resp, err := d.httpClient.Do(req) //nolint:bodyclose //https://github.com/timakin/bodyclose/issues/30
 	if err != nil {
 		return PanelImage{}, fmt.Errorf("error sending request: %w", err)
 	}
@@ -91,7 +92,7 @@ func (d *Dashboard) fetchPNGFromGrafanaAPI(ctx context.Context, panelURL string)
 
 		time.Sleep(10 * time.Second * time.Duration(retries))
 
-		resp, err = d.httpClient.Do(req)
+		resp, err = d.httpClient.Do(req) //nolint:bodyclose //https://github.com/timakin/bodyclose/issues/30
 		if err != nil {
 			return PanelImage{}, fmt.Errorf("error executing retry request for %s: %w", panelURL, err)
 		}

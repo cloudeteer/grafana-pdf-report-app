@@ -18,7 +18,7 @@ import (
 		- https://github.com/chromedp/examples/tree/master
 */
 
-// enableLifeCycleEvents enables the chromedp life cycle events
+// enableLifeCycleEvents enables the chromedp life cycle events.
 func enableLifeCycleEvents() chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		err := page.Enable().Do(ctx)
@@ -51,12 +51,9 @@ func waitFor(eventName string) chromedp.ActionFunc {
 		ch := make(chan struct{})
 		cctx, cancel := context.WithCancel(ctx)
 		chromedp.ListenTarget(cctx, func(ev interface{}) {
-			switch e := ev.(type) {
-			case *page.EventLifecycleEvent:
-				if e.Name == eventName {
-					cancel()
-					close(ch)
-				}
+			if lifecycleEvent, ok := ev.(*page.EventLifecycleEvent); ok && lifecycleEvent.Name == eventName {
+				cancel()
+				close(ch)
 			}
 		})
 		select {

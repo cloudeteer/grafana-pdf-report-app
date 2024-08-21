@@ -19,13 +19,13 @@ var WithAwaitPromise = func(p *runtime.EvaluateParams) *runtime.EvaluateParams {
 	return p.WithAwaitPromise(true)
 }
 
-// Tab is container for a browser tab
+// Tab is container for a browser tab.
 type Tab struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 }
 
-// Close releases the resources of the current browser tab
+// Close releases the resources of the current browser tab.
 func (t *Tab) Close(logger log.Logger) {
 	if t.ctx != nil {
 		var err error
@@ -45,7 +45,7 @@ func (t *Tab) Close(logger log.Logger) {
 	}
 }
 
-// NavigateAndWaitFor navigates to the given address and waits for the given event to be fired on the page
+// NavigateAndWaitFor navigates to the given address and waits for the given event to be fired on the page.
 func (t *Tab) NavigateAndWaitFor(addr string, headers map[string]any, eventName string) error {
 	err := t.Run(
 		// block some URLs to avoid unnecessary requests
@@ -80,32 +80,32 @@ func (t *Tab) NavigateAndWaitFor(addr string, headers map[string]any, eventName 
 	return nil
 }
 
-// WithTimeout set the timeout for the actions in the current tab
+// WithTimeout set the timeout for the actions in the current tab.
 func (t *Tab) WithTimeout(timeout time.Duration) {
 	t.ctx, t.cancel = context.WithTimeout(t.ctx, timeout)
 }
 
-// Run executes the actions in the current tab
+// Run executes the actions in the current tab.
 func (t *Tab) Run(actions ...chromedp.Action) error {
-	return chromedp.Run(t.ctx, actions...)
+	return chromedp.Run(t.ctx, actions...) //nolint:wrapcheck
 }
 
-// Run executes the actions in the current tab
+// Run executes the actions in the current tab.
 func (t *Tab) RunWithTimeout(timeout time.Duration, actions ...chromedp.Action) error {
 	ctx, cancel := context.WithTimeout(t.ctx, timeout)
 	err := chromedp.Run(ctx, actions...)
 
 	cancel()
 
-	return err
+	return err //nolint:wrapcheck
 }
 
-// Context returns the current tab's context
+// Context returns the current tab's context.
 func (t *Tab) Context() context.Context {
 	return t.ctx
 }
 
-// PrintToPDF returns chroms tasks that print the requested HTML into a PDF and returns the PDF stream handle
+// PrintToPDF returns chroms tasks that print the requested HTML into a PDF and returns the PDF stream handle.
 func (t *Tab) PrintToPDF(options PDFOptions, writer io.Writer) error {
 	err := chromedp.Run(t.ctx, chromedp.Tasks{
 		chromedp.Navigate("about:blank"),
@@ -158,7 +158,6 @@ func (t *Tab) PrintToPDF(options PDFOptions, writer io.Writer) error {
 			return nil
 		}),
 	})
-
 	if err != nil {
 		return fmt.Errorf("error rendering PDF: %w", err)
 	}

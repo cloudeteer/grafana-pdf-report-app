@@ -30,6 +30,8 @@ func NewStreamReader(ctx context.Context, handle cdprotoio.StreamHandle) io.Read
 }
 
 // Read a chunk of the stream.
+//
+//nolint:nonamedreturns
 func (reader *streamReader) Read(p []byte) (n int, err error) {
 	if reader.r != nil {
 		// Continue reading from buffer.
@@ -70,7 +72,7 @@ func (reader *streamReader) Read(p []byte) (n int, err error) {
 			n, err = base64.StdEncoding.Decode(p, b)
 			reader.pos += n
 
-			return n, err
+			return n, err //nolint:wrapcheck
 		}
 
 		reader.r = base64.NewDecoder(base64.StdEncoding, bytes.NewReader(b))
@@ -107,6 +109,7 @@ func (reader *streamReader) next(pos, size int) (cdprotoio.ReadReturns, error) {
 	return res, fmt.Errorf("execute IO.read command: %w", err)
 }
 
+//nolint:nonamedreturns
 func (reader *streamReader) read(p []byte) (n int, err error) {
 	n, err = reader.r.Read(p)
 	reader.pos += n

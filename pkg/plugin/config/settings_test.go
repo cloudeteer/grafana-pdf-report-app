@@ -59,6 +59,7 @@ func TestSettings(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			conf, err := config.Load(context.Background(), backend.AppInstanceSettings{JSONData: json.RawMessage(tc.config), DecryptedSecureJSONData: tc.secretsMap})
 
 			require.NoError(t, err)
@@ -91,7 +92,7 @@ func TestSettingsUsingEnvVars(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "https://localhost:3000", conf.AppURL)
-	assert.Equal(t, true, conf.SkipTLSCheck)
+	assert.True(t, conf.SkipTLSCheck)
 	assert.Equal(t, "light", conf.Theme)
 	assert.Equal(t, "landscape", conf.Orientation)
 	assert.Equal(t, "grid", conf.Layout)
@@ -120,7 +121,7 @@ func TestSettingsUsingConfigAndEnvVars(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "https://localhost:3000", conf.AppURL)
-	assert.Equal(t, true, conf.SkipTLSCheck)
+	assert.True(t, conf.SkipTLSCheck)
 	assert.Equal(t, "light", conf.Theme)
 	assert.Equal(t, "landscape", conf.Orientation)
 	assert.Equal(t, "grid", conf.Layout)
@@ -150,7 +151,7 @@ func TestSettingsUsingConfigAndOverridingEnvVars(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "https://example.grafana.com", conf.AppURL)
-	assert.Equal(t, true, conf.SkipTLSCheck)
+	assert.True(t, conf.SkipTLSCheck)
 	assert.Equal(t, "light", conf.Theme)
 	assert.Equal(t, "landscape", conf.Orientation)
 	assert.Equal(t, "grid", conf.Layout)
