@@ -56,3 +56,5 @@ plugin-validator
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+/tools/bin/
