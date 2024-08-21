@@ -18,6 +18,7 @@ linters:
     - contextcheck
     - containedctx
     - varnamelen
+    - exportloopref
     - lll
 
 issues:
