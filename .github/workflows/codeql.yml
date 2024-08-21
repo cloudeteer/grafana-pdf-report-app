@@ -48,11 +48,11 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@f0f3afee809481da311ca3a6ff1ff51d81dbeb24 # v3.26.4
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
@@ -65,7 +65,7 @@ jobs:
 
     - name: Build backend
       if: ${{ matrix.language == 'go' }}
-      uses: magefile/mage-action@v3
+      uses: magefile/mage-action@6a5dcb5fe61f43d7c08a98bc3cf9bc63c308c08e # v3
       with:
         version: latest
         args: build
@@ -78,6 +78,6 @@ jobs:
         "${CODEQL_EXTRACTOR_GO_ROOT}/tools/linux64/go-extractor" ./...
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@f0f3afee809481da311ca3a6ff1ff51d81dbeb24 # v3.26.4
       with:
         category: /language:${{ matrix.language }}

@@ -12,7 +12,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: local modifications for release
         run: |
           npm version '${{ github.ref_name }}' --no-git-tag-version
@@ -21,7 +21,7 @@ jobs:
           mv package.tmp.json package.json
           
           rm -rf tools # Remove tools directory
-      - uses: grafana/plugin-actions/build-plugin@0315492b375faa7af0fa6c226ecb6c93c6fe9745 # commit of 2024-07-08
+      - uses: grafana/plugin-actions/build-plugin@d381e10ef234721a03e28af8017e290dc225e945 # commit of 2024-07-08
         with:
           policy_token: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
           go-version: '1.22'
