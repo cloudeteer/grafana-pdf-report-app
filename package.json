@@ -1,6 +1,6 @@
 {
   "name": "cloudeteer-pdfreport-app",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A Grafana plugin app that generates PDF reports from Grafana dashboards",
   "config": {
     "plainUrl": "http://admin:admin@localhost:3080/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=fdlwjnyim1la8f&layout=simple&orientation=portrait&dashboardMode=default&var-testvar0=All&var-testvar1=foo&var-testvar2=1",
