@@ -80,7 +80,7 @@ func (d *Dashboard) fetchBrowser(ctx context.Context, expandRows bool) (BrowserD
 	dashURL = dashURL.JoinPath("d", d.uid, "_")
 
 	dashURLValues := maps.Clone(d.values)
-	dashURLValues.Add("theme", d.conf.Theme)
+	dashURLValues.Set("theme", d.conf.Theme)
 
 	dashURL.RawQuery = dashURLValues.Encode()
 
@@ -177,10 +177,10 @@ func (d *Dashboard) FetchTable(ctx context.Context, panel Panel) (PanelTable, er
 	dashURL = dashURL.JoinPath("d", d.uid, "_")
 
 	dashURLValues := maps.Clone(d.values)
-	dashURLValues.Add("theme", d.conf.Theme)
-	dashURLValues.Add("viewPanel", strconv.Itoa(panel.ID))
-	dashURLValues.Add("inspect", strconv.Itoa(panel.ID))
-	dashURLValues.Add("inspectTab", "data")
+	dashURLValues.Set("theme", d.conf.Theme)
+	dashURLValues.Set("viewPanel", strconv.Itoa(panel.ID))
+	dashURLValues.Set("inspect", strconv.Itoa(panel.ID))
+	dashURLValues.Set("inspectTab", "data")
 
 	dashURL.RawQuery = dashURLValues.Encode()
 

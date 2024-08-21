@@ -38,12 +38,10 @@ func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, er
 	dashURL = dashURL.JoinPath("render/d-solo", d.uid, "_")
 
 	dashURLValues := maps.Clone(d.values)
-	dashURLValues.Add("theme", d.conf.Theme)
-	dashURLValues.Add("panelId", strconv.Itoa(panel.ID))
-	dashURLValues.Add("from", strconv.FormatInt(timeRange.From, 10))
-	dashURLValues.Add("to", strconv.FormatInt(timeRange.To, 10))
-
-	dashURL.RawQuery = dashURLValues.Encode()
+	dashURLValues.Set("theme", d.conf.Theme)
+	dashURLValues.Set("panelId", strconv.Itoa(panel.ID))
+	dashURLValues.Set("from", strconv.FormatInt(timeRange.From, 10))
+	dashURLValues.Set("to", strconv.FormatInt(timeRange.To, 10))
 
 	// If using a grid layout we use 100px for width and 36px for height scaling.
 	// Grafana panels are fitted into 24 units width and height units are said to
@@ -55,12 +53,14 @@ func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, er
 		width := int(panel.GridPos.W * 100)
 		height := int(panel.GridPos.H * 36)
 
-		dashURLValues.Add("width", strconv.Itoa(width))
-		dashURLValues.Add("height", strconv.Itoa(height))
+		dashURLValues.Set("width", strconv.Itoa(width))
+		dashURLValues.Set("height", strconv.Itoa(height))
 	} else {
-		dashURLValues.Add("width", "1000")
-		dashURLValues.Add("height", "500")
+		dashURLValues.Set("width", "1000")
+		dashURLValues.Set("height", "500")
 	}
+
+	dashURL.RawQuery = dashURLValues.Encode()
 
 	// Get Panel API endpoint
 	return dashURL.String(), nil
