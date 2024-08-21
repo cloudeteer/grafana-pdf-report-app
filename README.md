@@ -27,7 +27,7 @@ improvements and modernization.
   generated report.
 
 - The plugin can be configured by Admins and users either from
-  [Configuration Page](./src/img/light.png) or query parameters to the report API.
+  [Configuration Page](https://github.com/cloudeteer/grafana-pdf-report-app/blob/main/src/img/light.png) or query parameters to the report API.
 
 
 A Grafana plugin to create PDF reports from dashboard panels. This app has been
