@@ -6,13 +6,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"net/url"
 	"strconv"
-	"sync"
 	"time"
-
-	"github.com/cloudeteer/grafana-pdf-report-app/pkg/plugin/worker"
 )
 
 func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel, timeRange TimeRange) (PanelImage, error) {
@@ -21,18 +19,7 @@ func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel, timeRange TimeRan
 		return PanelImage{}, fmt.Errorf("error getting panel PNG URL: %w", err)
 	}
 
-	wg := sync.WaitGroup{}
-
-	var panelImage PanelImage
-
-	d.workerPools[worker.Renderer].Do(func() {
-		defer wg.Done()
-
-		panelImage, err = d.fetchPNGFromGrafanaAPI(ctx, panelPNGURL)
-	})
-
-	wg.Wait()
-
+	panelImage, err := d.fetchPNGFromGrafanaAPI(ctx, panelPNGURL)
 	if err != nil {
 		return PanelImage{}, fmt.Errorf("error fetching panel PNG: %w", err)
 	}
@@ -49,12 +36,14 @@ func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, er
 	}
 
 	dashURL = dashURL.JoinPath("render/d-solo", d.uid, "_")
-	dashURL.RawQuery = d.values
 
-	dashURL.Query().Add("theme", d.conf.Theme)
-	dashURL.Query().Add("panelId", strconv.Itoa(panel.ID))
-	dashURL.Query().Add("from", strconv.FormatInt(timeRange.From, 10))
-	dashURL.Query().Add("to", strconv.FormatInt(timeRange.To, 10))
+	dashURLValues := maps.Clone(d.values)
+	dashURLValues.Add("theme", d.conf.Theme)
+	dashURLValues.Add("panelId", strconv.Itoa(panel.ID))
+	dashURLValues.Add("from", strconv.FormatInt(timeRange.From, 10))
+	dashURLValues.Add("to", strconv.FormatInt(timeRange.To, 10))
+
+	dashURL.RawQuery = dashURLValues.Encode()
 
 	// If using a grid layout we use 100px for width and 36px for height scaling.
 	// Grafana panels are fitted into 24 units width and height units are said to
@@ -65,11 +54,11 @@ func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, er
 	if d.conf.Layout == "grid" {
 		width := int(panel.GridPos.W * 100)
 		height := int(panel.GridPos.H * 36)
-		dashURL.Query().Add("width", strconv.Itoa(width))
-		dashURL.Query().Add("height", strconv.Itoa(height))
+		dashURLValues.Add("width", strconv.Itoa(width))
+		dashURLValues.Add("height", strconv.Itoa(height))
 	} else {
-		dashURL.Query().Add("width", "1000")
-		dashURL.Query().Add("height", "500")
+		dashURLValues.Add("width", "1000")
+		dashURLValues.Add("height", "500")
 	}
 
 	// Get Panel API endpoint
@@ -85,6 +74,8 @@ func (d *Dashboard) fetchPNGFromGrafanaAPI(ctx context.Context, panelURL string)
 
 	// Add the Authorization header
 	req.Header.Add("Authorization", "Bearer "+d.saToken)
+
+	d.logger.Debug("fetching panel PNG", "url", panelURL)
 
 	// Send the request
 	resp, err := d.httpClient.Do(req)

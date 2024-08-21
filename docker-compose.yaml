@@ -6,7 +6,7 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-oss}
-        grafana_version: ${GRAFANA_VERSION:-11.1.0}
+        grafana_version: ${GRAFANA_VERSION:-11.1.4}
         development: ${DEVELOPMENT:-false}
     cap_add:
       - SYS_PTRACE
@@ -16,7 +16,6 @@ services:
     security_opt:
       - "apparmor:unconfined"
       - "seccomp:unconfined"
-    privileged: true
     volumes:
       - ./dist:/var/lib/grafana/plugins/cloudeteer-pdfreport-app
       - ./provisioning:/etc/grafana/provisioning

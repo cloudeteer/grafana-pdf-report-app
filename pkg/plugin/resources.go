@@ -157,7 +157,7 @@ func (app *App) handleReport(w http.ResponseWriter, req *http.Request) {
 		app.workerPools,
 		grafanaAppURL,
 		dashboardUID,
-		req.URL.RawQuery,
+		req.URL.Query(),
 		saToken,
 	)
 

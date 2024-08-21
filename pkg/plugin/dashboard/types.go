@@ -3,6 +3,7 @@ package dashboard
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/cloudeteer/grafana-pdf-report-app/pkg/plugin/chrome"
@@ -38,12 +39,12 @@ type Dashboard struct {
 
 	grafanaBaseURL string
 	uid            string
-	values         string
+	values         url.Values
 	saToken        string
 }
 
 type Data struct {
-	Titel     string
+	Title     string
 	TimeRange TimeRange
 	Panels    []Panel
 }
@@ -70,6 +71,10 @@ type TimeRange struct {
 }
 
 type APIData struct {
+	Dashboard APIDashboardData `json:"dashboard"`
+}
+
+type APIDashboardData struct {
 	Title          string       `json:"title"`
 	Description    string       `json:"description"`
 	VariableValues string       // Not present in the Grafana JSON structure. Enriched data passed used by the Tex templating

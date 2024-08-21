@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/cloudeteer/grafana-pdf-report-app/pkg/plugin/chrome"
 	"github.com/cloudeteer/grafana-pdf-report-app/pkg/plugin/config"
@@ -13,7 +14,7 @@ import (
 
 // New creates a new instance of the Dashboard struct
 func New(logger log.Logger, conf config.Config, httpClient *http.Client, chromeInstance chrome.Instance,
-	pools worker.Pools, grafanaBaseURL string, uid string, values string, saToken string) *Dashboard {
+	pools worker.Pools, grafanaBaseURL string, uid string, values url.Values, saToken string) *Dashboard {
 	return &Dashboard{
 		logger,
 		conf,
@@ -50,7 +51,7 @@ func (d *Dashboard) GetData(ctx context.Context, expandRows bool) (Data, error) 
 	}
 
 	return Data{
-		Titel:     apiData.Title,
+		Title:     apiData.Title,
 		TimeRange: browserData.TimeRange,
 		Panels:    panels,
 	}, err

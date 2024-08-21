@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"maps"
 	"net/url"
 	"strconv"
 	"strings"
@@ -46,7 +47,7 @@ Promise.all(promises);`
 		"width": e.style.width,
 		"height": e.style.height,
 		"transform": e.style.transform,
-		"id": e.getAttribute("data-panelid"),
+		"id": parseInt(e.getAttribute("data-panelid")),
 		"type": props.children[0].props.panel.type,
 		"title": e.querySelector('h2')?.innerText,
     }
@@ -58,7 +59,10 @@ Promise.all(promises);`
 	//language=javascript
 	javascriptGetTimeRange = `
 let timeRange = document.querySelector('[role="tooltip"]').innerText.split("\n");
-{from: Math.floor(Date.parse(timeRange[0]+" "+timeRange[3]) / 1000), to: Math.floor(Date.parse(timeRange[02]+" "+timeRange[3]) / 1000)}
+let output = {
+    from: Math.floor(Date.parse(timeRange[0]+" "+timeRange[3].replace('Local browser time', '')) / 1000), 
+    to: Math.floor(Date.parse(timeRange[2]+" "+timeRange[3].replace('Local browser time', '')) / 1000),
+}; output
 `
 
 	selPageScrollbar              = `#page-scrollbar`
@@ -77,9 +81,11 @@ func (d *Dashboard) fetchBrowser(ctx context.Context, expandRows bool) (BrowserD
 	}
 
 	dashURL = dashURL.JoinPath("d", d.uid, "_")
-	dashURL.RawQuery = d.values
 
-	dashURL.Query().Add("theme", d.conf.Theme)
+	dashURLValues := maps.Clone(d.values)
+	dashURLValues.Add("theme", d.conf.Theme)
+
+	dashURL.RawQuery = dashURLValues.Encode()
 
 	browserData, err := d.fetchPanelDataFromBrowser(ctx, dashURL.String(), expandRows)
 	if err != nil {
@@ -126,7 +132,7 @@ func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string,
 
 	// JS that will fetch dashboard model
 	if err := tab.RunWithTimeout(30*time.Second, chromedp.Evaluate(javascriptPanelData, &dashboardData.PanelData)); err != nil {
-		return BrowserData{}, fmt.Errorf("error fetching dashboard URL from browser %s: %w", dashURL, err)
+		return BrowserData{}, fmt.Errorf("error fetching panel data: %w", err)
 	}
 
 	if len(dashboardData.PanelData) == 0 {
@@ -166,12 +172,14 @@ func (d *Dashboard) FetchTable(ctx context.Context, panel Panel) (PanelTable, er
 	}
 
 	dashURL = dashURL.JoinPath("d", d.uid, "_")
-	dashURL.RawQuery = d.values
 
-	dashURL.Query().Add("theme", d.conf.Theme)
-	dashURL.Query().Add("viewPanel", strconv.Itoa(panel.ID))
-	dashURL.Query().Add("inspect", strconv.Itoa(panel.ID))
-	dashURL.Query().Add("inspectTab", "data")
+	dashURLValues := maps.Clone(d.values)
+	dashURLValues.Add("theme", d.conf.Theme)
+	dashURLValues.Add("viewPanel", strconv.Itoa(panel.ID))
+	dashURLValues.Add("inspect", strconv.Itoa(panel.ID))
+	dashURLValues.Add("inspectTab", "data")
+
+	dashURL.RawQuery = dashURLValues.Encode()
 
 	data, err := d.fetchTableData(ctx, dashURL.String())
 	if err != nil {
@@ -198,7 +206,7 @@ func (d *Dashboard) fetchTableData(_ context.Context, panelURL string) (PanelTab
 	// Set the OAuth token in the headers
 	headers := map[string]any{backend.OAuthIdentityTokenHeaderName: "Bearer " + d.saToken}
 
-	d.logger.Debug("Navigating to panel via browser", "url", panelURL)
+	d.logger.Debug("fetch table data via browser", "url", panelURL)
 
 	err := tab.NavigateAndWaitFor(panelURL, headers, "networkIdle")
 	if err != nil {

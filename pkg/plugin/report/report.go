@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -113,14 +114,21 @@ func (r *Report) Generate(ctx context.Context, writer http.ResponseWriter) error
 		return fmt.Errorf("failed to generate report: %v", errors.Join(errs...))
 	}
 
+	panelTables = slices.DeleteFunc(panelTables, func(panelTable dashboard.PanelTable) bool {
+		return panelTable.Data == nil
+	})
+
 	// Sanitize title to escape non ASCII characters
 	// Ref: https://stackoverflow.com/questions/62705546/unicode-characters-in-attachment-name
 	// Ref: https://medium.com/@JeremyLaine/non-ascii-content-disposition-header-in-django-3a20acc05f0d
-	filename := url.PathEscape(dashboardData.Titel)
+	filename := url.PathEscape(dashboardData.Title)
 	header := fmt.Sprintf(`inline; filename*=UTF-8''%s.pdf`, filename)
 	writer.Header().Add("Content-Disposition", header)
 
 	htmlReport, err := r.generateHTMLFile(dashboardData, panelTables, panelPNGs)
+	if err != nil {
+		return fmt.Errorf("failed to generate HTML file: %w", err)
+	}
 
 	if err = r.renderPDF(htmlReport, writer); err != nil {
 		return fmt.Errorf("failed to render PDF: %w", err)
@@ -131,9 +139,11 @@ func (r *Report) Generate(ctx context.Context, writer http.ResponseWriter) error
 
 // generateHTMLFile generates HTML files for PDF
 func (r *Report) generateHTMLFile(dashboardData dashboard.Data, panelTables []dashboard.PanelTable, panelPNGs []dashboard.PanelImage) (HTML, error) {
-	var tmpl *template.Template
-	var err error
-	var html HTML
+	var (
+		err  error
+		html HTML
+		tmpl *template.Template
+	)
 
 	// Template functions
 	funcMap := template.FuncMap{
