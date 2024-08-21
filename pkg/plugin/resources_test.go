@@ -73,8 +73,6 @@ func TestReportResource(t *testing.T) {
 		t.Fatal("inst must be of type *App")
 	}
 
-	assert.NotNil(t, app)
-
 	/** Refactoring
 
 	Convey("When the report handler is called", t, func() {
@@ -165,4 +163,6 @@ func TestReportResource(t *testing.T) {
 		})
 	})
 	*/
+
+	assert.NotNil(t, app)
 }
