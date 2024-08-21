@@ -86,15 +86,11 @@
     "@grafana/runtime": "^11.1.4",
     "@grafana/ui": "^11.1.4",
     "@grafana/experimental": "1.8.0",
-    "@grafana/schema": "11.1.4",
+    "@grafana/schema": "^11.1.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "^5.2.0",
     "rxjs": "7.8.1",
     "tslib": "2.6.3"
-  },
-  "resolutions": {
-    "string-width": "^4.2.0",
-    "wrap-ansi": "^7.0.0"
   }
 }
