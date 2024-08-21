@@ -40,6 +40,8 @@ update:  ## Run dependency updates
 	@npx -y @grafana/create-plugin@latest update
 	@go get -u ./...
 	@go mod tidy
+	@go get -C $(TOOLS_MOD_DIR) -u ./...
+	@go mod -C $(TOOLS_MOD_DIR) tidy
 
 .PHONY: build  ## Build the project
 build: clean $(PROJECT_NAME)
