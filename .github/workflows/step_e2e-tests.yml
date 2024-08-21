@@ -73,15 +73,15 @@ jobs:
         uses: nowsprinting/diff-pdf-action@v1
         with:
           file1: default.pdf
-          file2: .ci/reports/${{ matrix.snapshots-folder }}/default.pdf
-          options: --verbose --output-diff=default-${{ matrix.snapshots-folder }}-diff.pdf
+          file2: .ci/reports/default.pdf
+          options: --verbose --output-diff=default-diff.pdf
       
       - name: Compare PDF report from TLS server
         uses: nowsprinting/diff-pdf-action@v1
         with:
           file1: alternative.pdf
-          file2: .ci/reports/${{ matrix.snapshots-folder }}/alternative.pdf
-          options: --verbose --output-diff=alternative-${{ matrix.snapshots-folder }}-diff.pdf
+          file2: .ci/reports/alternative.pdf
+          options: --verbose --output-diff=alternative-diff.pdf
 
       - name: Collect docker logs on failure
         if: failure()
