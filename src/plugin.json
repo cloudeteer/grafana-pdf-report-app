@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "app",
+  "name": "Grafana Dashboard Reporter",
+  "id": "cloudeteer-pdfreport-app",
+  "backend": true,
+  "executable": "gpx_pdfreport-app",
+  "info": {
+    "keywords": ["report", "pdf", "dashboards", "api"],
+    "description": "A Grafana plugin app that generates PDF reports from Grafana dashboards",
+    "author": {
+      "name": "Mahendra Paipuri"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Project site",
+        "url": "https://github.com/cloudeteer/grafana-pdf-report-app"
+      },
+      {
+        "name": "License & Terms",
+        "url": "https://github.com/cloudeteer/grafana-pdf-report-app/blob/main/LICENSE"
+      }
+    ],
+    "screenshots": [
+      { "name": "Configuration (Dark)", "path": "img/dark.png" },
+      { "name": "Configuration (Light)", "path": "img/light.png" }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "includes": [
+    {
+      "type": "page",
+      "name": "Status",
+      "path": "/a/%PLUGIN_ID%/status",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": true
+    },
+    {
+      "type": "page",
+      "icon": "cog",
+      "name": "Configuration",
+      "path": "/plugins/%PLUGIN_ID%",
+      "role": "Admin",
+      "addToNav": false
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=10.0.3",
+    "plugins": []
+  },
+  "iam": {
+    "permissions": [
+      { "action": "folders:read", "scope": "folders:uid:*" },
+      { "action": "dashboards:read", "scope": "folders:uid:*" },
+      { "action": "annotations:read", "scope": "annotations:type:*" },
+      { "action": "datasources:query", "scope": "datasources:*" }
+    ]
+  }
+}
