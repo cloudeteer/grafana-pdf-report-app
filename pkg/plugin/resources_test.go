@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+/*
 // mockCallResourceResponseSender implements backend.CallResourceResponseSender
 // for use in tests.
 type mockCallResourceResponseSender struct {
@@ -22,6 +23,8 @@ func (s *mockCallResourceResponseSender) Send(response *backend.CallResourceResp
 
 	return nil
 }
+
+*/
 
 // Test report resource.
 func TestReportResource(t *testing.T) {
