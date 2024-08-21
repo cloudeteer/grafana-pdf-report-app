@@ -28,7 +28,7 @@ func getDashboardVariables(r *http.Request) url.Values {
 }
 
 // handleReport handles creating a PDF report from a given dashboard UID
-// GET /api/plugins/cloudeteer-dashboardreporter-app/resources/report
+// GET /api/plugins/cloudeteer-pdfreport-app/resources/report
 func (app *App) handleReport(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

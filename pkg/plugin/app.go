@@ -15,7 +15,7 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/resource/httpadapter"
 )
 
-const Name = "cloudeteer-dashboardreporter-app"
+const Name = "cloudeteer-pdfreport-app"
 
 // Make sure App implements required interfaces. This is important to do
 // since otherwise we will only get a not implemented error response from plugin in

@@ -1,12 +1,12 @@
 ARG grafana_version=latest
-ARG grafana_image=grafana-oss
+ARG grafana_image=grafana-enterprise
 
 FROM grafana/${grafana_image}:${grafana_version}
 
 ARG development=false
 ARG TARGETARCH
 
-ARG GO_VERSION=1.22.5
+ARG GO_VERSION=1.21.6
 ARG GO_ARCH=${TARGETARCH:-amd64}
 
 ENV DEV "${development}"
@@ -26,8 +26,6 @@ ENV GF_PATHS_HOME="/usr/share/grafana"
 WORKDIR $GF_PATHS_HOME
 
 USER root
-
-RUN apk add chromium
 
 # Installing supervisor and inotify-tools
 RUN if [ "${development}" = "true" ]; then \

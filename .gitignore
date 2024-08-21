@@ -28,7 +28,7 @@ ci/
 e2e-results/
 **/cypress/videos
 **/cypress/report.json
-cloudeteer-dashboardreporter-app*
+cloudeteer-pdfreport-app*
 
 # Editor
 .idea

@@ -1,7 +1,7 @@
 services:
   grafana:
     # image: grafana/grafana:latest
-    container_name: 'cloudeteer-dashboardreporter-app'
+    container_name: 'cloudeteer-pdfreport-app'
     build:
       context: ./.config
       args:
@@ -17,9 +17,9 @@ services:
       - "apparmor:unconfined"
       - "seccomp:unconfined"
     volumes:
-      - ./dist:/var/lib/grafana/plugins/cloudeteer-dashboardreporter-app
+      - ./dist:/var/lib/grafana/plugins/cloudeteer-pdfreport-app
       - ./provisioning:/etc/grafana/provisioning
-      - ./:/root/cloudeteer-dashboardreporter-app
+      - ./:/root/cloudeteer-pdfreport-app
     environment:
       # basic settings
       # output to terminal
@@ -44,7 +44,7 @@ services:
       # Grafana image renderer
       - GF_RENDERING_SERVER_URL=http://renderer:8081/render
       - GF_RENDERING_CALLBACK_URL=http://grafana:${GF_SERVER_HTTP_PORT:-3000}/
-      - "GF_LOG_FILTERS=rendering:debug plugin.cloudeteer-dashboardreporter-app:debug"
+      - "GF_LOG_FILTERS=rendering:debug plugin.cloudeteer-pdfreport-app:debug"
   renderer:
     image: grafana/grafana-image-renderer:latest
     environment:

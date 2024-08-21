@@ -18,12 +18,12 @@ fi
 if [[ -z "$NIGHTLY" ]]; then
     LATEST_RELEASE_TAG=$(echo "$ALL_RELEASES" | grep -Eo '"tag_name": "v[^"]*' | sed -E 's/"tag_name": "//' | sed -E 's/^.//' | head -n 1)
     echo "The latest release tag of $REPO_NAME is: $LATEST_RELEASE_TAG"
-    DOWNLOAD_URL="https://github.com/cloudeteer/grafana-pdf-report-app/releases/download/v$LATEST_RELEASE_TAG/cloudeteer-dashboardreporter-app-$LATEST_RELEASE_TAG.zip"
+    DOWNLOAD_URL="https://github.com/cloudeteer/grafana-pdf-report-app/releases/download/v$LATEST_RELEASE_TAG/cloudeteer-pdfreport-app-$LATEST_RELEASE_TAG.zip"
 else 
     echo "Using latest nightly release"
     LATEST_RELEASE_TAG="nightly"
-    DOWNLOAD_URL="https://github.com/cloudeteer/grafana-pdf-report-app/releases/download/$LATEST_RELEASE_TAG/cloudeteer-dashboardreporter-app-$LATEST_RELEASE_TAG.zip"
+    DOWNLOAD_URL="https://github.com/cloudeteer/grafana-pdf-report-app/releases/download/$LATEST_RELEASE_TAG/cloudeteer-pdfreport-app-$LATEST_RELEASE_TAG.zip"
 fi
 
-curl -L "$DOWNLOAD_URL" --output cloudeteer-dashboardreporter-app-$LATEST_RELEASE_TAG.zip
-unzip cloudeteer-dashboardreporter-app-$LATEST_RELEASE_TAG.zip -d .
+curl -L "$DOWNLOAD_URL" --output cloudeteer-pdfreport-app-$LATEST_RELEASE_TAG.zip
+unzip cloudeteer-pdfreport-app-$LATEST_RELEASE_TAG.zip -d .

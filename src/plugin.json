@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
   "name": "Grafana Dashboard Reporter",
-  "id": "cloudeteer-dashboardreporter-app",
+  "id": "cloudeteer-pdfreport-app",
   "backend": true,
   "executable": "gpx_dashboardreporter-app",
   "info": {

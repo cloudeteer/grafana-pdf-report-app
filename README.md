@@ -80,7 +80,7 @@ as an unsigned plugin. The installation procedure is briefed in
 Download the [latest Grafana Dashboard Reporter](https://github.com/cloudeteer/grafana-pdf-report-app/releases/latest).
 
 Create a directory for grafana to access your custom-plugins
-_e.g._ `/var/lib/grafana/plugins/cloudeteer-dashboardreporter-app`.
+_e.g._ `/var/lib/grafana/plugins/cloudeteer-pdfreport-app`.
 
 The following shell script downloads and extracts the latest plugin source
 code into the the current working directory. Run the following inside your grafana
@@ -109,15 +109,15 @@ whitelist the plugin, we need to add following to the Grafana configuration file
 
 ```ini
 [plugins]
-allow_loading_unsigned_plugins = cloudeteer-dashboardreporter-app
+allow_loading_unsigned_plugins = cloudeteer-pdfreport-app
 ```
 
 Once this configuration is added, restart the Grafana server and it should load the
 plugin. The loading of plugin can be verified by the following log lines
 
 ```bash
-logger=plugin.signature.validator t=2024-03-21T11:16:54.738077851Z level=warn msg="Permitting unsigned plugin. This is not recommended" pluginID=cloudeteer-dashboardreporter-app
-logger=plugin.loader t=2024-03-21T11:16:54.738166325Z level=info msg="Plugin registered" pluginID=cloudeteer-dashboardreporter-app
+logger=plugin.signature.validator t=2024-03-21T11:16:54.738077851Z level=warn msg="Permitting unsigned plugin. This is not recommended" pluginID=cloudeteer-pdfreport-app
+logger=plugin.loader t=2024-03-21T11:16:54.738166325Z level=info msg="Plugin registered" pluginID=cloudeteer-pdfreport-app
 
 ```
 
@@ -140,7 +140,7 @@ enable it in different ways.
 - From Grafana UI, navigating to `Apps > Dashboard Reporter App > Configuration` will
 show [this page](https://github.com/cloudeteer/grafana-pdf-report-app/blob/main/src/img/light.png)
 and plugin can be enabled there. The configuration page can also be
-accessed by URL `<Grafana URL>/plugins/cloudeteer-dashboardreporter-app`.
+accessed by URL `<Grafana URL>/plugins/cloudeteer-pdfreport-app`.
 
 > [!NOTE]
 > The warning about `Invalid plugin signature` is not fatal and it is simply saying
@@ -252,34 +252,34 @@ by using query parameters. It is enough to add query parameters to dashboard rep
 to set these values. Currently, the supported query parameters are:
 
 - Query field for theme is `theme` and it takes either `light` or `dark` as value.
-  Example is `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&theme=dark`
+  Example is `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&theme=dark`
 
 - Query field for layout is `layout` and it takes either `simple` or `grid` as value.
-  Example is `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&layout=grid`
+  Example is `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&layout=grid`
 
 - Query field for orientation is `orientation` and it takes either `portrait` or `landscape`
-  as value. Example is `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&orientation=landscape`
+  as value. Example is `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&orientation=landscape`
 
 - Query field for dashboard mode is `dashboardMode` and it takes either `default` or `full`
-  as value. Example is `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&dashboardMode=full`
+  as value. Example is `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&dashboardMode=full`
 
 - Query field for dashboard mode is `timeZone` and it takes a value in [IANA format](https://www.iana.org/time-zones)
   as value. **Note** that it should be encoded to escape URL specific characters. For example
   to use `America/New_York` query parameter should be
-  `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&timeZone=America%2FNew_York`
+  `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&timeZone=America%2FNew_York`
 
 Besides there are two special query parameters available namely:
 
 - `includePanelID`: This can be used to include only panels with IDs set in the query in
   the generated report. An example can be
-  `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&includePanelID=1&includePanelID=5&includePanelID=8`.
+  `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&includePanelID=1&includePanelID=5&includePanelID=8`.
   This request will only include the panels `1`, `5` and `8` in the report and ignoring the rest.
   When `grid` layout is used with `includePanelID`, the report layout will leave the gaps
   in the place of panels that are not included in the report.
 
 - `excludePanelID`: This can be used to exclude any unwanted panels in
   the generated report. An example can be
-  `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>&excludePanelID=2&excludePanelID=7`.
+  `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>&excludePanelID=2&excludePanelID=7`.
   This request will only exclude panels `2`, and `7` in the report and including the rest.
   When `grid` layout is used with `excludePanelID`, the report layout will leave the gaps
   in the place of panels that are excluded in the report.
@@ -321,7 +321,7 @@ want to create a PDF report. After the user authenticates with Grafana, creating
 dashboard report is done by visiting the following end point
 
 ```bash
-<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>
+<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>
 ```
 
 In addition to `dashUid` query parameter, it is possible to pass time range query
@@ -338,7 +338,7 @@ Following steps will configure a dashboard link to create PDF report for that da
 - Go to Settings of Dashboard
 - Go to Links in the side bar and click on `Add Dashboard Link`
 - Use Report for `Title` field, set `Type` to `Link`
-- Now set `URL` to `<grafanaAppUrl>/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>`
+- Now set `URL` to `<grafanaAppUrl>/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>`
 - Set `Tooltip` to `Create a PDF report` and set `Icon` to `doc`
 - By checking `Include current time range` and `Include current template variables values`,
   time range and dashboard variables will be added to query parameters while creating
@@ -361,7 +361,7 @@ either the same or another API token must be added to the
 generated and configured in the plugin, reports can be created using
 
 ```bash
-curl --output=report.pdf -H "Authorization: Bearer <supersecrettoken>" "https://example.grafana.com/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=<UID of dashboard>"
+curl --output=report.pdf -H "Authorization: Bearer <supersecrettoken>" "https://example.grafana.com/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=<UID of dashboard>"
 ```
 
 The above example shows on how to generate report using `curl` but this can be done with

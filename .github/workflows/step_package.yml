@@ -32,9 +32,9 @@ jobs:
           # Add +x bits on executables
           chmod -R +x dist/gpx_*
           
-          mv dist cloudeteer-dashboardreporter-app
-          zip cloudeteer-dashboardreporter-app-nightly.zip cloudeteer-dashboardreporter-app -r
-          sha1sum cloudeteer-dashboardreporter-app-nightly.zip | cut -f1 -d' ' > cloudeteer-dashboardreporter-app-nightly.zip.sha1
+          mv dist cloudeteer-pdfreport-app
+          zip cloudeteer-pdfreport-app-nightly.zip cloudeteer-pdfreport-app -r
+          sha1sum cloudeteer-pdfreport-app-nightly.zip | cut -f1 -d' ' > cloudeteer-pdfreport-app-nightly.zip.sha1
 
       - name: Validate plugin
         run: |
@@ -43,7 +43,7 @@ jobs:
           pushd ./plugin-validator/pkg/cmd/plugincheck2
           go install
           popd
-          plugincheck2 -sourceCodeUri plugin-app.zip -config ./plugin-validator/config/pipeline.yaml cloudeteer-dashboardreporter-app-nightly.zip
+          plugincheck2 -sourceCodeUri plugin-app.zip -config ./plugin-validator/config/pipeline.yaml cloudeteer-pdfreport-app-nightly.zip
         shell: bash
 
       # Check if bootstrap script is working for latest release and nightly release
@@ -65,8 +65,8 @@ jobs:
         with:
           name: plugin-artifacts
           path: |
-            cloudeteer-dashboardreporter-app-nightly.zip
-            cloudeteer-dashboardreporter-app-nightly.zip.sha1
+            cloudeteer-pdfreport-app-nightly.zip
+            cloudeteer-pdfreport-app-nightly.zip.sha1
           retention-days: 3
       
       - name: Release nightly
@@ -78,8 +78,8 @@ jobs:
           name: nightly
           tag_name: nightly
           files: |
-            cloudeteer-dashboardreporter-app-nightly.zip
-            cloudeteer-dashboardreporter-app-nightly.zip.sha1
+            cloudeteer-pdfreport-app-nightly.zip
+            cloudeteer-pdfreport-app-nightly.zip.sha1
           fail_on_unmatched_files: true
           body: |
             # Latest Build Complete! :rocket:

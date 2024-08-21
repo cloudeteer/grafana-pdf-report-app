@@ -1,15 +1,15 @@
 {
-  "name": "cloudeteer-dashboardreporter-app",
+  "name": "cloudeteer-pdfreport-app",
   "version": "1.5.0",
   "description": "A Grafana plugin app that generates PDF reports from Grafana dashboards",
   "config": {
-    "plainUrl": "http://admin:admin@localhost:3080/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=fdlwjnyim1la8f&layout=simple&orientation=portrait&dashboardMode=default&var-testvar0=All&var-testvar1=foo&var-testvar2=1",
-    "tlsUrl": "https://admin:admin@localhost:3443/api/plugins/cloudeteer-dashboardreporter-app/resources/report?dashUid=fdlwjnyim1la8f&layout=grid&orientation=landscape&dashboardMode=full&from=now-5m&to=now&var-testvar0=All&var-testvar1=foo&var-testvar2=1"
+    "plainUrl": "http://admin:admin@localhost:3080/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=fdlwjnyim1la8f&layout=simple&orientation=portrait&dashboardMode=default&var-testvar0=All&var-testvar1=foo&var-testvar2=1",
+    "tlsUrl": "https://admin:admin@localhost:3443/api/plugins/cloudeteer-pdfreport-app/resources/report?dashUid=fdlwjnyim1la8f&layout=grid&orientation=landscape&dashboardMode=full&from=now-5m&to=now&var-testvar0=All&var-testvar1=foo&var-testvar2=1"
   },
   "scripts": {
     "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
     "build:plugin": "yarn install --pure-lockfile && yarn build && mage -v",
-    "package": "yarn build:plugin && zip -r cloudeteer-dashboardreporter-app.zip",
+    "package": "yarn build:plugin && zip -r cloudeteer-pdfreport-app.zip",
     "dev": "webpack -w -c ./.config/webpack/webpack.config.ts --env development",
     "e2e:update": "playwright test --update-screenshots",
     "e2e": "playwright test",
@@ -38,7 +38,7 @@
     "@babel/core": "^7.21.4",
     "@grafana/eslint-config": "^7.0.0",
     "@grafana/plugin-e2e": "^1.6.1",
-    "@grafana/tsconfig": "1.3.0-rc1",
+    "@grafana/tsconfig": "^2.0.0",
     "@grafana/plugin-meta-extractor": "^0.0.2",
     "@playwright/test": "^1.41.2",
     "@swc/core": "^1.3.90",
@@ -82,9 +82,9 @@
   },
   "dependencies": {
     "@emotion/css": "11.10.6",
-    "@grafana/data": "^11.1.3",
-    "@grafana/runtime": "^11.1.3",
-    "@grafana/ui": "^11.1.3",
+    "@grafana/data": "^11.1.4",
+    "@grafana/runtime": "^11.1.4",
+    "@grafana/ui": "^11.1.4",
     "@grafana/experimental": "1.7.12",
     "@grafana/schema": "11.1.3",
     "react": "18.2.0",

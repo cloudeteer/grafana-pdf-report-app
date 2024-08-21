@@ -13,7 +13,7 @@ export const Status = () => {
 
     return Promise.all([
       backendSrv.get(
-        `api/plugins/cloudeteer-dashboardreporter-app/health`
+        `api/plugins/cloudeteer-pdfreport-app/health`
       ),
     ]);
   });
