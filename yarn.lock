@@ -644,10 +644,10 @@
     ua-parser-js "^1.0.32"
     web-vitals "^4.0.1"
 
-"@grafana/plugin-e2e@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@grafana/plugin-e2e/-/plugin-e2e-1.6.1.tgz#51c4f9d32f5d92e38061f09f5bcaa9d5070d64b5"
-  integrity sha512-1Ww1luGFKeytiAhbg321+z8n0yZ5ARTkUgSN4YdRkupHThwi+pysqGmmiy9tJyewyqkZMt8maawL6gK2qyTKHA==
+"@grafana/plugin-e2e@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@grafana/plugin-e2e/-/plugin-e2e-1.7.1.tgz#c95354f9d48226b6821129e4fcdceee30f40640b"
+  integrity sha512-wuZMWAjEcmkhiuKGzBTIU8TiiDtidwPULxZh7eDGVlAdQfafDnYkaPSkF18jz/AdXliS/XNSxMHhDnIb7Icj4A==
   dependencies:
     semver "^7.5.4"
     uuid "^9.0.1"
@@ -6246,10 +6246,10 @@ prelude-ls@^1.2.1:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-prettier@^2.8.7:
-  version "2.8.8"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
-  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
+prettier@^3.0.0:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.3.3.tgz#30c54fe0be0d8d12e6ae61dbb10109ea00d53105"
+  integrity sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==
 
 pretty-format@^27.0.2:
   version "27.5.1"
