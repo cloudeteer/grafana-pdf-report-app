@@ -1,63 +1,75 @@
-package config
+package config_test
 
 import (
 	"context"
 	"encoding/json"
 	"testing"
 
+	"github.com/cloudeteer/grafana-pdf-report-app/pkg/plugin/config"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/grafana/grafana-plugin-sdk-go/backend/httpclient"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSettings(t *testing.T) {
-	Convey("When creating a new config from minimum JSONData", t, func() {
-		const configJSON = `{}`
-		configData := json.RawMessage(configJSON)
-		config, err := Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
+	t.Parallel()
 
-		Convey("Config should contain default config", func() {
-			So(err, ShouldBeNil)
-			So(config.Orientation, ShouldEqual, "portrait")
-			So(config.Layout, ShouldEqual, "simple")
-			So(config.MaxBrowserWorkers, ShouldEqual, 2)
-			So(config.MaxRenderWorkers, ShouldEqual, 2)
+	for _, tc := range []struct {
+		name       string
+		config     string
+		secretsMap map[string]string
+		expected   config.Config
+	}{
+		{
+			"empty config",
+			`{}`,
+			nil,
+			func() config.Config {
+				conf := config.DefaultConfig
+
+				return conf
+			}(),
+		},
+		{
+			"layout config",
+			`{"layout": "grid"}`,
+			nil,
+			func() config.Config {
+				conf := config.DefaultConfig
+				conf.Layout = "grid"
+
+				return conf
+			}(),
+		},
+		{
+			"with secrets",
+			`{"layout": "grid"}`,
+			map[string]string{
+				"saToken": "superSecretToken",
+			},
+			func() config.Config {
+				conf := config.DefaultConfig
+				conf.Layout = "grid"
+				conf.Token = "superSecretToken"
+
+				return conf
+			}(),
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			conf, err := config.Load(context.Background(), backend.AppInstanceSettings{JSONData: json.RawMessage(tc.config), DecryptedSecureJSONData: tc.secretsMap})
+
+			require.NoError(t, err)
+
+			assert.Equal(t, tc.expected.HTTPClientOptions.TLS, conf.HTTPClientOptions.TLS)
+
+			tc.expected.HTTPClientOptions = httpclient.Options{}
+			conf.HTTPClientOptions = httpclient.Options{}
+			assert.Equal(t, tc.expected, conf)
 		})
-	})
-
-	Convey("When creating a new config from provisioned JSONData", t, func() {
-		const configJSON = `{"layout": "grid"}`
-		configData := json.RawMessage(configJSON)
-		config, err := Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
-
-		Convey("Config should contain default config", func() {
-			So(err, ShouldBeNil)
-			So(config.Orientation, ShouldEqual, "portrait")
-			So(config.Layout, ShouldEqual, "grid")
-			So(config.MaxBrowserWorkers, ShouldEqual, 2)
-			So(config.MaxRenderWorkers, ShouldEqual, 2)
-		})
-	})
-
-	Convey("When creating a new config from provisioned JSONData and secrets", t, func() {
-		const configJSON = `{"layout": "grid"}`
-		configData := json.RawMessage(configJSON)
-		secretsMap := map[string]string{
-			"saToken": "supersecrettoken",
-		}
-		config, err := Load(
-			context.Background(),
-			backend.AppInstanceSettings{JSONData: configData, DecryptedSecureJSONData: secretsMap},
-		)
-
-		Convey("Config should contain default config", func() {
-			So(err, ShouldBeNil)
-			So(config.Orientation, ShouldEqual, "portrait")
-			So(config.Layout, ShouldEqual, "grid")
-			So(config.MaxBrowserWorkers, ShouldEqual, 2)
-			So(config.MaxRenderWorkers, ShouldEqual, 2)
-			So(config.Token, ShouldEqual, "supersecrettoken")
-		})
-	})
+	}
 }
 
 func TestSettingsUsingEnvVars(t *testing.T) {
@@ -69,29 +81,26 @@ func TestSettingsUsingEnvVars(t *testing.T) {
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LAYOUT", "grid")
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_DASHBOARD_MODE", "full")
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_TIMEZONE", "America/New_York")
-	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LOGO", "encodedlogo")
+	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LOGO", "encodedLogo")
 	t.Setenv("GF_REPORTER_PLUGIN_REMOTE_CHROME_URL", "ws://localhost:5333")
 
-	Convey("When creating a new config from only env vars", t, func() {
-		const configJSON = `{}`
-		configData := json.RawMessage(configJSON)
-		config, err := Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
+	const configJSON = `{}`
+	configData := json.RawMessage(configJSON)
+	conf, err := config.Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
 
-		Convey("Config should contain config from env vars", func() {
-			So(err, ShouldBeNil)
-			So(config.AppURL, ShouldEqual, "https://localhost:3000")
-			So(config.SkipTLSCheck, ShouldEqual, true)
-			So(config.Theme, ShouldEqual, "light")
-			So(config.Orientation, ShouldEqual, "landscape")
-			So(config.Layout, ShouldEqual, "grid")
-			So(config.DashboardMode, ShouldEqual, "full")
-			So(config.TimeZone, ShouldEqual, "America/New_York")
-			So(config.EncodedLogo, ShouldEqual, "encodedlogo")
-			So(config.MaxBrowserWorkers, ShouldEqual, 2)
-			So(config.MaxRenderWorkers, ShouldEqual, 2)
-			So(config.RemoteChromeURL, ShouldEqual, "ws://localhost:5333")
-		})
-	})
+	require.NoError(t, err)
+
+	assert.Equal(t, "https://localhost:3000", conf.AppURL)
+	assert.Equal(t, true, conf.SkipTLSCheck)
+	assert.Equal(t, "light", conf.Theme)
+	assert.Equal(t, "landscape", conf.Orientation)
+	assert.Equal(t, "grid", conf.Layout)
+	assert.Equal(t, "full", conf.DashboardMode)
+	assert.Equal(t, "America/New_York", conf.TimeZone)
+	assert.Equal(t, "encodedLogo", conf.EncodedLogo)
+	assert.Equal(t, 2, conf.MaxBrowserWorkers)
+	assert.Equal(t, 2, conf.MaxRenderWorkers)
+	assert.Equal(t, "ws://localhost:5333", conf.RemoteChromeURL)
 }
 
 func TestSettingsUsingConfigAndEnvVars(t *testing.T) {
@@ -101,29 +110,26 @@ func TestSettingsUsingConfigAndEnvVars(t *testing.T) {
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_ORIENTATION", "landscape")
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LAYOUT", "grid")
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_TIMEZONE", "America/New_York")
-	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LOGO", "encodedlogo")
+	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LOGO", "encodedLogo")
 	t.Setenv("GF_REPORTER_PLUGIN_REMOTE_CHROME_URL", "ws://localhost:5333")
 
-	Convey("When creating a new config from file and env vars", t, func() {
-		const configJSON = `{"appUrl": "https://localhost:3000","dashboardMode": "full"}`
-		configData := json.RawMessage(configJSON)
-		config, err := Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
+	const configJSON = `{"appUrl": "https://localhost:3000","dashboardMode": "full"}`
+	configData := json.RawMessage(configJSON)
+	conf, err := config.Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
 
-		Convey("Config should contain config from file and env vars", func() {
-			So(err, ShouldBeNil)
-			So(config.AppURL, ShouldEqual, "https://localhost:3000")
-			So(config.SkipTLSCheck, ShouldEqual, true)
-			So(config.Theme, ShouldEqual, "light")
-			So(config.Orientation, ShouldEqual, "landscape")
-			So(config.Layout, ShouldEqual, "grid")
-			So(config.DashboardMode, ShouldEqual, "full")
-			So(config.TimeZone, ShouldEqual, "America/New_York")
-			So(config.EncodedLogo, ShouldEqual, "encodedlogo")
-			So(config.MaxBrowserWorkers, ShouldEqual, 2)
-			So(config.MaxRenderWorkers, ShouldEqual, 2)
-			So(config.RemoteChromeURL, ShouldEqual, "ws://localhost:5333")
-		})
-	})
+	require.NoError(t, err)
+
+	assert.Equal(t, "https://localhost:3000", conf.AppURL)
+	assert.Equal(t, true, conf.SkipTLSCheck)
+	assert.Equal(t, "light", conf.Theme)
+	assert.Equal(t, "landscape", conf.Orientation)
+	assert.Equal(t, "grid", conf.Layout)
+	assert.Equal(t, "full", conf.DashboardMode)
+	assert.Equal(t, "America/New_York", conf.TimeZone)
+	assert.Equal(t, "encodedLogo", conf.EncodedLogo)
+	assert.Equal(t, 2, conf.MaxBrowserWorkers)
+	assert.Equal(t, 2, conf.MaxRenderWorkers)
+	assert.Equal(t, "ws://localhost:5333", conf.RemoteChromeURL)
 }
 
 func TestSettingsUsingConfigAndOverridingEnvVars(t *testing.T) {
@@ -134,27 +140,24 @@ func TestSettingsUsingConfigAndOverridingEnvVars(t *testing.T) {
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_ORIENTATION", "landscape")
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LAYOUT", "grid")
 	t.Setenv("GF_REPORTER_PLUGIN_REPORT_TIMEZONE", "America/New_York")
-	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LOGO", "encodedlogo")
+	t.Setenv("GF_REPORTER_PLUGIN_REPORT_LOGO", "encodedLogo")
 	t.Setenv("GF_REPORTER_PLUGIN_REMOTE_CHROME_URL", "ws://localhost:5333")
 
-	Convey("When creating a new config from file and overriding them from env vars", t, func() {
-		const configJSON = `{"appUrl": "https://localhost:3000","theme": "dark", "dashboardMode": "full"}`
-		configData := json.RawMessage(configJSON)
-		config, err := Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
+	const configJSON = `{"appUrl": "https://localhost:3000","theme": "dark", "dashboardMode": "full"}`
+	configData := json.RawMessage(configJSON)
+	conf, err := config.Load(context.Background(), backend.AppInstanceSettings{JSONData: configData})
 
-		Convey("Config should contain config overridden from env vars", func() {
-			So(err, ShouldBeNil)
-			So(config.AppURL, ShouldEqual, "https://example.grafana.com")
-			So(config.SkipTLSCheck, ShouldEqual, true)
-			So(config.Theme, ShouldEqual, "light")
-			So(config.Orientation, ShouldEqual, "landscape")
-			So(config.Layout, ShouldEqual, "grid")
-			So(config.DashboardMode, ShouldEqual, "full")
-			So(config.TimeZone, ShouldEqual, "America/New_York")
-			So(config.EncodedLogo, ShouldEqual, "encodedlogo")
-			So(config.MaxBrowserWorkers, ShouldEqual, 2)
-			So(config.MaxRenderWorkers, ShouldEqual, 2)
-			So(config.RemoteChromeURL, ShouldEqual, "ws://localhost:5333")
-		})
-	})
+	require.NoError(t, err)
+
+	assert.Equal(t, "https://example.grafana.com", conf.AppURL)
+	assert.Equal(t, true, conf.SkipTLSCheck)
+	assert.Equal(t, "light", conf.Theme)
+	assert.Equal(t, "landscape", conf.Orientation)
+	assert.Equal(t, "grid", conf.Layout)
+	assert.Equal(t, "full", conf.DashboardMode)
+	assert.Equal(t, "America/New_York", conf.TimeZone)
+	assert.Equal(t, "encodedLogo", conf.EncodedLogo)
+	assert.Equal(t, 2, conf.MaxBrowserWorkers)
+	assert.Equal(t, 2, conf.MaxRenderWorkers)
+	assert.Equal(t, "ws://localhost:5333", conf.RemoteChromeURL)
 }

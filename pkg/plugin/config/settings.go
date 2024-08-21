@@ -14,6 +14,26 @@ import (
 
 const SaToken = "saToken"
 
+// DefaultConfig Always start with a default config so that when the plugin is not provisioned
+// with a config, we will still have "non-null" config to work with
+var DefaultConfig = Config{
+	Theme:              "light",
+	Orientation:        "portrait",
+	Layout:             "simple",
+	DashboardMode:      "default",
+	TimeZone:           "",
+	EncodedLogo:        "",
+	MaxBrowserWorkers:  2,
+	MaxRenderWorkers:   2,
+	RequiredPermission: "Viewer",
+	HTTPClientOptions: httpclient.Options{
+		Timeouts: &httpclient.DefaultTimeoutOptions,
+		TLS: &httpclient.TLSOptions{
+			InsecureSkipVerify: false,
+		},
+	},
+}
+
 // Config contains plugin settings
 type Config struct {
 	AppURL             string `json:"appUrl"             env:"GF_REPORTER_PLUGIN_APP_URL, overwrite"`
@@ -86,24 +106,7 @@ func (c *Config) String() string {
 
 // Load loads the plugin settings from data sent by provisioned config or from Grafana UI
 func Load(ctx context.Context, settings backend.AppInstanceSettings) (Config, error) {
-	// Always start with a default config so that when the plugin is not provisioned
-	// with a config, we will still have "non-null" config to work with
-	var config = Config{
-		Theme:              "light",
-		Orientation:        "portrait",
-		Layout:             "simple",
-		DashboardMode:      "default",
-		TimeZone:           "",
-		EncodedLogo:        "",
-		MaxBrowserWorkers:  2,
-		MaxRenderWorkers:   2,
-		RequiredPermission: "Viewer",
-		HTTPClientOptions: httpclient.Options{
-			TLS: &httpclient.TLSOptions{
-				InsecureSkipVerify: false,
-			},
-		},
-	}
+	config := DefaultConfig
 
 	// Fetch token, if configured in SecureJSONData
 	if settings.DecryptedSecureJSONData != nil {

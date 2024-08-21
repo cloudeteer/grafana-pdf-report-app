@@ -4,7 +4,7 @@
   "name": "Grafana Dashboard Reporter",
   "id": "cloudeteer-pdfreport-app",
   "backend": true,
-  "executable": "gpx_dashboardreporter-app",
+  "executable": "gpx_pdfreport-app",
   "info": {
     "keywords": ["report", "pdf", "dashboards", "api"],
     "description": "A Grafana plugin app that generates PDF reports from Grafana dashboards",

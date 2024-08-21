@@ -16,6 +16,7 @@ services:
     security_opt:
       - "apparmor:unconfined"
       - "seccomp:unconfined"
+    privileged: true
     volumes:
       - ./dist:/var/lib/grafana/plugins/cloudeteer-pdfreport-app
       - ./provisioning:/etc/grafana/provisioning

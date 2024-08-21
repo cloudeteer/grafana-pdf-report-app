@@ -128,7 +128,7 @@ apps:
       # If this option is set, ensure that the `appUrl` is reachable is from remote
       # chrome instance
       #
-      remoteChromeUrl: ''
+      remoteChromeUrl: 'ws://localhost:9222'
       
       
       # Report template to use for generating reports. This is an advanced feature.

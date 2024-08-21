@@ -3,7 +3,6 @@ package plugin
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
@@ -12,20 +11,6 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
-
-// Get dashboard variables via query parameters
-func getDashboardVariables(r *http.Request) url.Values {
-	variables := url.Values{}
-	for k, v := range r.URL.Query() {
-		if strings.HasPrefix(k, "var-") || k == "from" || k == "to" {
-			for _, singleV := range v {
-				variables.Add(k, singleV)
-			}
-		}
-	}
-
-	return variables
-}
 
 // handleReport handles creating a PDF report from a given dashboard UID
 // GET /api/plugins/cloudeteer-pdfreport-app/resources/report
