@@ -35,6 +35,8 @@ jobs:
           mv dist cloudeteer-pdfreport-app
           zip cloudeteer-pdfreport-app-nightly.zip cloudeteer-pdfreport-app -r
           sha1sum cloudeteer-pdfreport-app-nightly.zip | cut -f1 -d' ' > cloudeteer-pdfreport-app-nightly.zip.sha1
+          
+          rm -rf tools # Remove tools directory
 
       - name: Validate plugin
         run: |
