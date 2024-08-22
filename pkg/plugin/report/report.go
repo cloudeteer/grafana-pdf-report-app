@@ -88,7 +88,7 @@ func (r *Report) Generate(ctx context.Context, writer http.ResponseWriter) error
 		r.pools[worker.Renderer].Do(func() {
 			defer wg.Done()
 
-			panelPNG, err := r.dashboard.FetchPNG(ctx, panel, dashboardData.TimeRange)
+			panelPNG, err := r.dashboard.FetchPNG(ctx, panel)
 			if err != nil {
 				errorCh <- fmt.Errorf("failed to fetch PNG data for panel %d: %w", panel.ID, err)
 			}
