@@ -40,8 +40,6 @@ func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, er
 	dashURLValues := maps.Clone(d.values)
 	dashURLValues.Set("theme", d.conf.Theme)
 	dashURLValues.Set("panelId", strconv.Itoa(panel.ID))
-	dashURLValues.Set("from", strconv.FormatInt(timeRange.From, 10))
-	dashURLValues.Set("to", strconv.FormatInt(timeRange.To, 10))
 
 	// If using a grid layout we use 100px for width and 36px for height scaling.
 	// Grafana panels are fitted into 24 units width and height units are said to
