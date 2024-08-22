@@ -100,7 +100,7 @@ func (d *Dashboard) fetchBrowser(ctx context.Context, expandRows bool) (BrowserD
 //nolint:cyclop
 func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string, expandRows bool) (BrowserData, error) {
 	tab := d.chromeInstance.NewTab(d.logger, d.conf)
-	tab.WithTimeout(1 * time.Minute)
+	tab.WithTimeout(5 * time.Minute)
 
 	defer tab.Close(d.logger)
 
@@ -126,7 +126,7 @@ func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string,
 		return BrowserData{}, fmt.Errorf("error waiting for #page-scrollbar: %w", err)
 	}
 
-	if err := tab.RunWithTimeout(5*time.Second, chromedp.Evaluate(javascriptScrollToBottom, nil, chrome.WithAwaitPromise)); err != nil {
+	if err := tab.RunWithTimeout(30*time.Second, chromedp.Evaluate(javascriptScrollToBottom, nil, chrome.WithAwaitPromise)); err != nil {
 		return BrowserData{}, fmt.Errorf("error scrolling to bottom: %w", err)
 	}
 
