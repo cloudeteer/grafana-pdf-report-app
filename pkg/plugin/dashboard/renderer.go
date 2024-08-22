@@ -13,8 +13,8 @@ import (
 	"time"
 )
 
-func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel, timeRange TimeRange) (PanelImage, error) {
-	panelPNGURL, err := d.getPanelPNGURL(panel, timeRange)
+func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel) (PanelImage, error) {
+	panelPNGURL, err := d.getPanelPNGURL(panel)
 	if err != nil {
 		return PanelImage{}, fmt.Errorf("error getting panel PNG URL: %w", err)
 	}
@@ -29,7 +29,7 @@ func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel, timeRange TimeRan
 	return panelImage, nil
 }
 
-func (d *Dashboard) getPanelPNGURL(panel Panel, timeRange TimeRange) (string, error) {
+func (d *Dashboard) getPanelPNGURL(panel Panel) (string, error) {
 	dashURL, err := url.Parse(d.grafanaBaseURL)
 	if err != nil {
 		return "", fmt.Errorf("error parsing Grafana base URL: %w", err)
