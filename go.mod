@@ -7,7 +7,7 @@ toolchain go1.22.5
 require (
 	github.com/chromedp/cdproto v0.0.0-20240810084448-b931b754e476
 	github.com/chromedp/chromedp v0.10.0
-	github.com/grafana/grafana-plugin-sdk-go v0.244.0
+	github.com/grafana/grafana-plugin-sdk-go v0.245.0
 	github.com/magefile/mage v1.15.0
 	github.com/sethvargo/go-envconfig v1.1.0
 	github.com/stretchr/testify v1.9.0
