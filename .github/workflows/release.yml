@@ -24,4 +24,4 @@ jobs:
       - uses: grafana/plugin-actions/build-plugin@d381e10ef234721a03e28af8017e290dc225e945 # commit of 2024-07-08
         with:
           policy_token: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
-          go-version: '1.22'
+          go-version: '1.23'
