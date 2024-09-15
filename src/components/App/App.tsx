@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { AppRootProps } from '@grafana/data';
+import { Route, Routes } from 'react-router-dom';
 import { PluginPropsContext } from '../../utils/utils.plugin';
 import { Status } from '../../pages/Status';
 
