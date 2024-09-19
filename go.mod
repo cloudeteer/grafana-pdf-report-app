@@ -5,7 +5,7 @@ go 1.23
 require (
 	github.com/chromedp/cdproto v0.0.0-20240810084448-b931b754e476
 	github.com/chromedp/chromedp v0.10.0
-	github.com/grafana/grafana-plugin-sdk-go v0.246.0
+	github.com/grafana/grafana-plugin-sdk-go v0.250.0
 	github.com/magefile/mage v1.15.0
 	github.com/sethvargo/go-envconfig v1.1.0
 	github.com/stretchr/testify v1.9.0
@@ -68,7 +68,7 @@ require (
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/prometheus/client_golang v1.20.1 // indirect
+	github.com/prometheus/client_golang v1.20.3 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -100,7 +100,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240822170219-fc7c04adadcd // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240820151423-278611b39280 // indirect
-	google.golang.org/grpc v1.65.0 // indirect
+	google.golang.org/grpc v1.66.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
