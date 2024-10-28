@@ -59,7 +59,7 @@ services:
       - IGNORE_HTTPS_ERRORS=true
 
   chrome_plain:
-    image: chromedp/headless-shell:130.0.6723.70
+    image: chromedp/headless-shell:132.0.6793.2
     shm_size: 2G
     init: true
     network_mode: service:grafana_plain
@@ -125,7 +125,7 @@ services:
       - IGNORE_HTTPS_ERRORS=true
   
   chrome_tls:
-    image: chromedp/headless-shell:130.0.6723.70
+    image: chromedp/headless-shell:132.0.6793.2
     shm_size: 2G
     init: true
     network_mode: service:grafana_tls
