@@ -11,9 +11,11 @@ export const test = base.extend<AppTestFixture>({
     const configPage = await gotoAppConfigPage({
       pluginId: pluginJson.id,
     });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(configPage);
   },
   gotoPage: async ({ gotoAppPage }, use) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use((path) =>
       gotoAppPage({
         path,
