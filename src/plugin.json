@@ -9,7 +9,7 @@
     "keywords": ["report", "pdf", "dashboards", "api"],
     "description": "A Grafana plugin app that generates PDF reports from Grafana dashboards",
     "author": {
-      "name": "Mahendra Paipuri"
+      "name": "CLOUDETEER GmbH"
     },
     "logos": {
       "small": "img/logo.svg",

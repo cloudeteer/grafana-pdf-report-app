@@ -32,7 +32,7 @@
     "test": "jest --watch --onlyChanged",
     "typecheck": "tsc --noEmit"
   },
-  "author": "Mahendra Paipuri",
+  "author": "CLOUDETEER GmbH",
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.21.4",

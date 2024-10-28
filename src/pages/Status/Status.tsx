@@ -4,7 +4,6 @@ import { PageLayoutType } from "@grafana/data";
 import { testIds } from "../../components/testIds";
 import { useAsync } from "react-use";
 import { Badge, Stack, LinkButton } from "@grafana/ui";
-// import { prefixRoute } from "../../utils/utils.routing";
 import { ROUTES, NAVIGATION } from "../../constants";
 
 export const Status = () => {
