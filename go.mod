@@ -3,8 +3,8 @@ module github.com/cloudeteer/grafana-pdf-report-app
 go 1.23
 
 require (
-	github.com/chromedp/cdproto v0.0.0-20240810084448-b931b754e476
-	github.com/chromedp/chromedp v0.10.0
+	github.com/chromedp/cdproto v0.0.0-20241022234722-4d5d5faf59fb
+	github.com/chromedp/chromedp v0.11.1
 	github.com/grafana/grafana-plugin-sdk-go v0.258.0
 	github.com/magefile/mage v1.15.0
 	github.com/sethvargo/go-envconfig v1.1.0
@@ -19,7 +19,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
-	github.com/chromedp/sysutil v1.0.0 // indirect
+	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/elazarl/goproxy v0.0.0-20240726154733-8b0c20506380 // indirect
