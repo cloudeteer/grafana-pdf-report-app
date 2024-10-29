@@ -19,8 +19,9 @@
       ]
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": [
         "(^|/).+\\.yaml$",
         "Makefile"
