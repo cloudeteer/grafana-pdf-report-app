@@ -23,31 +23,23 @@ const (
 
 	// javascriptScrollToBottom is a javascript code that will scroll to the bottom of the page.
 	javascriptScrollToBottom = `
-const scrollContainer = document.getElementById('page-scrollbar') ?? document.querySelectorAll('#pageContent > div > div > .scrollbar-view')[0];
-const scrollHeight = document.body.scrollHeight;
-const totalScrollHeight = scrollContainer.scrollHeight;
-const promises = [];
+new Promise((resolve) => {
+    document.addEventListener("scrollend", (event) => {
+	    resolve();
+	});
 
-for (let currentHeight = scrollHeight, delay = 0; currentHeight < totalScrollHeight; currentHeight += scrollHeight) {
-    promises.push(new Promise((resolve) => {
-        setTimeout(() => {
-            scrollContainer.scrollTo(0, currentHeight);
-            resolve();
-        }, currentHeight);
-    }));
-}
-
-Promise.all(promises);`
+	document.getElementById('pageContent').scrollIntoView({ behavior: "smooth", block: "end" });
+});
+`
 
 	javascriptPanelData = `
-[...document.getElementsByClassName('react-grid-item')].map(e => {
+[...document.querySelectorAll('section[data-testid^="data-testid Panel header"]')].map(e => {
 	props = e[Object.keys(e).filter(k => k.includes("Props"))[0]];
 	return {
 		"width": e.style.width,
 		"height": e.style.height,
-		"transform": e.style.transform,
-		"id": parseInt(e.getAttribute("data-panelid")),
-		"type": props.children[0].props.panel.type,
+		"transform": e.closest('div.react-grid-item').style.transform,
+		"id": e.parentElement.getAttribute("data-viz-panel-key").replace("panel-", ""),
 		"title": e.querySelector('h2')?.innerText,
     }
 })`
@@ -62,7 +54,7 @@ let output = {
 }; output
 `
 
-	selPageScrollbar              = `#page-scrollbar`
+	selPageScrollbar              = `#pageContent`
 	selTimePickerTimeRangeToolTip = `div[role="tooltip"]`
 	selTimePickerButton           = `button[aria-controls="TimePickerContent"]`
 
@@ -123,7 +115,7 @@ func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string,
 
 	// Check if the page has a scrollbar
 	if err := tab.RunWithTimeout(5*time.Second, chromedp.WaitReady(selPageScrollbar, chromedp.ByQuery)); err != nil {
-		return BrowserData{}, fmt.Errorf("error waiting for #page-scrollbar: %w", err)
+		return BrowserData{}, fmt.Errorf("error waiting for %s: %w", selPageScrollbar, err)
 	}
 
 	if err := tab.RunWithTimeout(5*time.Second, chromedp.Evaluate(javascriptScrollToBottom, nil, chrome.WithAwaitPromise)); err != nil {
@@ -144,7 +136,7 @@ func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string,
 
 	// Check if the page has a time picker button
 	if err := tab.RunWithTimeout(5*time.Second, chromedp.WaitReady(selTimePickerButton, chromedp.ByQuery)); err != nil {
-		return BrowserData{}, fmt.Errorf("error waiting for #page-scrollbar: %w", err)
+		return BrowserData{}, fmt.Errorf("error waiting for %s: %w", selTimePickerButton, err)
 	}
 
 	// To get the time range, we need to hover over the time picker button
@@ -168,7 +160,7 @@ func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string,
 	return dashboardData, nil
 }
 
-func (d *Dashboard) FetchTable(ctx context.Context, panel Panel) (PanelTable, error) {
+func (d *Dashboard) FetchTable(ctx context.Context, panel Panel[string]) (PanelTable, error) {
 	dashURL, err := url.Parse(d.grafanaBaseURL)
 	if err != nil {
 		return PanelTable{}, fmt.Errorf("error parsing Grafana base URL: %w", err)
@@ -178,8 +170,8 @@ func (d *Dashboard) FetchTable(ctx context.Context, panel Panel) (PanelTable, er
 
 	dashURLValues := maps.Clone(d.values)
 	dashURLValues.Set("theme", d.conf.Theme)
-	dashURLValues.Set("viewPanel", strconv.Itoa(panel.ID))
-	dashURLValues.Set("inspect", strconv.Itoa(panel.ID))
+	dashURLValues.Set("viewPanel", panel.ID)
+	dashURLValues.Set("inspect", panel.ID)
 	dashURLValues.Set("inspectTab", "data")
 
 	dashURL.RawQuery = dashURLValues.Encode()

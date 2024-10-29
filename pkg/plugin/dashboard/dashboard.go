@@ -44,7 +44,7 @@ func (d *Dashboard) GetData(ctx context.Context, expandRows bool) (Data, error) 
 		return Data{}, fmt.Errorf("error fetching dashboard from API: %w", err)
 	}
 
-	panels, err := d.collectPanelsFromData(browserData)
+	panels, err := d.collectPanelsFromData(apiData, browserData)
 	if err != nil {
 		d.logger.Error("error collecting panels from data", "error", err)
 

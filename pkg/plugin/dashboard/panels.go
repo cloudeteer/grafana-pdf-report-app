@@ -19,28 +19,45 @@ const (
 )
 
 //nolint:cyclop
-func (d *Dashboard) collectPanelsFromData(browserData BrowserData) ([]Panel, error) {
-	panels := make([]Panel, 0, len(browserData.PanelData))
+func (d *Dashboard) collectPanelsFromData(apiData APIDashboardData, browserData BrowserData) ([]Panel[string], error) {
+	panels := make([]Panel[string], 0, len(browserData.PanelData))
 
 	if browserData.PanelData == nil {
 		return nil, errors.New("apiData.RowOrPanels or browserData.PanelData is nil")
 	}
 
 	for _, browserPanel := range browserData.PanelData {
-		if len(d.conf.IncludePanelIDs) > 0 && slices.Contains(d.conf.IncludePanelIDs, browserPanel.ID) ||
-			len(d.conf.ExcludePanelIDs) > 0 && !slices.Contains(d.conf.ExcludePanelIDs, browserPanel.ID) ||
-			browserPanel.Type == "row" {
+		apiIDString, _, _ := strings.Cut(browserPanel.ID, "-")
+
+		apiID, err := strconv.Atoi(apiIDString)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert panel ID to int for panel ID %s: %w", apiIDString, err)
+		}
+
+		if len(d.conf.IncludePanelIDs) > 0 && slices.Contains(d.conf.IncludePanelIDs, apiID) ||
+			len(d.conf.ExcludePanelIDs) > 0 && !slices.Contains(d.conf.ExcludePanelIDs, apiID) {
 			continue
 		}
 
-		panelWidth, err := strconv.Atoi(strings.TrimSuffix(browserPanel.Width, "px"))
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert width to int for panel ID %d: %w", browserPanel.ID, err)
+		for _, apiPanel := range apiData.RowOrPanels {
+			if apiPanel.ID == apiID {
+				browserPanel.Type = apiPanel.Type
+				break
+			}
 		}
 
-		panelHeight, err := strconv.Atoi(strings.TrimSuffix(browserPanel.Height, "px"))
+		if browserPanel.Type == "row" {
+			continue
+		}
+
+		panelWidth, err := strconv.ParseFloat(strings.TrimSuffix(browserPanel.Width, "px"), 64)
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert height to int for panel ID %d: %w", browserPanel.ID, err)
+			return nil, fmt.Errorf("failed to convert width to float for panel ID %d: %w", browserPanel.ID, err)
+		}
+
+		panelHeight, err := strconv.ParseFloat(strings.TrimSuffix(browserPanel.Height, "px"), 64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert height to float for panel ID %d: %w", browserPanel.ID, err)
 		}
 
 		matches := translateRegex.FindStringSubmatch(browserPanel.Transform)
@@ -58,13 +75,13 @@ func (d *Dashboard) collectPanelsFromData(browserData BrowserData) ([]Panel, err
 			return nil, fmt.Errorf("failed to convert Y co-ordinate to int for panel ID %d: %w", browserPanel.ID, err)
 		}
 
-		panels = append(panels, Panel{
+		panels = append(panels, Panel[string]{
 			ID:    browserPanel.ID,
 			Title: browserPanel.Title,
 			Type:  browserPanel.Type,
 			GridPos: GridPos{
-				H: float64(panelHeight / scaleHeight),
-				W: float64(panelWidth / scaleWidth),
+				H: float64(int64(panelHeight) / scaleHeight),
+				W: float64(int64(panelWidth) / scaleWidth),
 				X: float64(panelX / scaleWidth),
 				Y: float64(panelY / scaleHeight),
 			},

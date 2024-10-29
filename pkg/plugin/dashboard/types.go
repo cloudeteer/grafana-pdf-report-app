@@ -46,7 +46,7 @@ type Dashboard struct {
 type Data struct {
 	Title     string
 	TimeRange TimeRange
-	Panels    []Panel
+	Panels    []Panel[string]
 }
 
 type BrowserData struct {
@@ -55,7 +55,7 @@ type BrowserData struct {
 }
 
 type BrowserPanelData struct {
-	ID        int    `json:"id"`
+	ID        string `json:"id"`
 	Width     string `json:"width"`
 	Height    string `json:"height"`
 	Title     string `json:"title"`
@@ -83,14 +83,14 @@ type APIDashboardData struct {
 
 // RowOrPanel represents a container for Panels.
 type RowOrPanel struct {
-	Panel
-	Collapsed bool    `json:"collapsed"`
-	Panels    []Panel `json:"panels"`
+	Panel[int]
+	Collapsed bool         `json:"collapsed"`
+	Panels    []Panel[int] `json:"panels"`
 }
 
 // Panel represents a Grafana dashboard panel.
-type Panel struct {
-	ID      int     `json:"id"`
+type Panel[T any] struct {
+	ID      T       `json:"id"`
 	Type    string  `json:"type"`
 	Title   string  `json:"title"`
 	GridPos GridPos `json:"gridPos"`
@@ -105,32 +105,32 @@ type GridPos struct {
 }
 
 // IsSingleStat returns true if panel is of type SingleStat.
-func (p Panel) IsSingleStat() bool {
+func (p Panel[T]) IsSingleStat() bool {
 	return p.Is(SingleStat)
 }
 
 // IsPartialWidth If panel has width less than total allowable width.
-func (p Panel) IsPartialWidth() bool {
+func (p Panel[T]) IsPartialWidth() bool {
 	return p.GridPos.W < 24
 }
 
 // Width returns the width of the panel.
-func (p Panel) Width() float64 {
+func (p Panel[T]) Width() float64 {
 	return float64(p.GridPos.W) * 0.04
 }
 
 // Height returns the height of the panel.
-func (p Panel) Height() float64 {
+func (p Panel[T]) Height() float64 {
 	return float64(p.GridPos.H) * 0.04
 }
 
 // Is returns true if panel is of type t.
-func (p Panel) Is(t PanelType) bool {
+func (p Panel[T]) Is(t PanelType) bool {
 	return p.Type == t.String()
 }
 
 type PanelImage struct {
-	Panel
+	Panel[string]
 	Image    string
 	MimeType string
 }

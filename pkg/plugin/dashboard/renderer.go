@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel) (PanelImage, error) {
+func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel[string]) (PanelImage, error) {
 	panelPNGURL, err := d.getPanelPNGURL(panel)
 	if err != nil {
 		return PanelImage{}, fmt.Errorf("error getting panel PNG URL: %w", err)
@@ -29,7 +29,7 @@ func (d *Dashboard) FetchPNG(ctx context.Context, panel Panel) (PanelImage, erro
 	return panelImage, nil
 }
 
-func (d *Dashboard) getPanelPNGURL(panel Panel) (string, error) {
+func (d *Dashboard) getPanelPNGURL(panel Panel[string]) (string, error) {
 	dashURL, err := url.Parse(d.grafanaBaseURL)
 	if err != nil {
 		return "", fmt.Errorf("error parsing Grafana base URL: %w", err)
@@ -39,7 +39,7 @@ func (d *Dashboard) getPanelPNGURL(panel Panel) (string, error) {
 
 	dashURLValues := maps.Clone(d.values)
 	dashURLValues.Set("theme", d.conf.Theme)
-	dashURLValues.Set("panelId", strconv.Itoa(panel.ID))
+	dashURLValues.Set("panelId", panel.ID)
 
 	// If using a grid layout we use 100px for width and 36px for height scaling.
 	// Grafana panels are fitted into 24 units width and height units are said to
