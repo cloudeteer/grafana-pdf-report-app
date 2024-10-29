@@ -3,6 +3,7 @@ package dashboard
 import (
 	"errors"
 	"fmt"
+	"math"
 	"regexp"
 	"slices"
 	"strconv"
@@ -14,7 +15,7 @@ import (
 var translateRegex = regexp.MustCompile(`translate\((?P<X>\d+)px, (?P<Y>\d+)px\)`)
 
 const (
-	scaleWidth  = 30
+	scaleWidth  = 80
 	scaleHeight = 36
 )
 
@@ -65,14 +66,14 @@ func (d *Dashboard) collectPanelsFromData(apiData APIDashboardData, browserData 
 			return nil, fmt.Errorf("failed to parse X and Y co-ordinates from CSS for panel ID %d: %s", browserPanel.ID, browserPanel.Transform)
 		}
 
-		panelX, err := strconv.Atoi(matches[translateRegex.SubexpIndex("X")])
+		panelX, err := strconv.ParseFloat(matches[translateRegex.SubexpIndex("X")], 64)
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert X co-ordinate to int for panel ID %d: %w", browserPanel.ID, err)
+			return nil, fmt.Errorf("failed to convert X co-ordinate to float for panel ID %d: %w", browserPanel.ID, err)
 		}
 
-		panelY, err := strconv.Atoi(matches[translateRegex.SubexpIndex("Y")])
+		panelY, err := strconv.ParseFloat(matches[translateRegex.SubexpIndex("Y")], 64)
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert Y co-ordinate to int for panel ID %d: %w", browserPanel.ID, err)
+			return nil, fmt.Errorf("failed to convert Y co-ordinate to float for panel ID %d: %w", browserPanel.ID, err)
 		}
 
 		panels = append(panels, Panel[string]{
@@ -80,10 +81,10 @@ func (d *Dashboard) collectPanelsFromData(apiData APIDashboardData, browserData 
 			Title: browserPanel.Title,
 			Type:  browserPanel.Type,
 			GridPos: GridPos{
-				H: float64(int64(panelHeight) / scaleHeight),
-				W: float64(int64(panelWidth) / scaleWidth),
-				X: float64(panelX / scaleWidth),
-				Y: float64(panelY / scaleHeight),
+				H: math.Round(panelHeight / scaleHeight),
+				W: math.Round(panelWidth / scaleWidth),
+				X: math.Round(panelX / scaleWidth),
+				Y: math.Round(panelY / scaleHeight),
 			},
 		})
 	}

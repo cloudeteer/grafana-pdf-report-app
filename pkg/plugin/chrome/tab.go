@@ -49,7 +49,7 @@ func (t *Tab) Close(logger log.Logger) {
 func (t *Tab) NavigateAndWaitFor(addr string, headers map[string]any, eventName string) error {
 	err := t.Run(
 		// block some URLs to avoid unnecessary requests
-		network.SetBlockedURLS([]string{"*/api/frontend-metrics", "*/api/live/ws", "*/api/user/*"}),
+		network.SetBlockedURLS([]string{"*/api/plugins/grafana-lokiexplore-app/*", "*/api/frontend-metrics", "*/api/live/ws", "*/api/user/*"}),
 		enableLifeCycleEvents(),
 	)
 	if err != nil {
@@ -72,7 +72,7 @@ func (t *Tab) NavigateAndWaitFor(addr string, headers map[string]any, eventName 
 		return fmt.Errorf("status code is %d:%s", resp.Status, resp.StatusText)
 	}
 
-	err = t.Run(waitFor(eventName))
+	err = t.RunWithTimeout(30*time.Second, waitFor(eventName))
 	if err != nil {
 		return fmt.Errorf("error waiting for %s on page %s: %w", eventName, addr, err)
 	}
@@ -90,14 +90,12 @@ func (t *Tab) Run(actions ...chromedp.Action) error {
 	return chromedp.Run(t.ctx, actions...) //nolint:wrapcheck
 }
 
-// Run executes the actions in the current tab.
+// RunWithTimeout executes the actions in the current tab.
 func (t *Tab) RunWithTimeout(timeout time.Duration, actions ...chromedp.Action) error {
 	ctx, cancel := context.WithTimeout(t.ctx, timeout)
-	err := chromedp.Run(ctx, actions...)
+	defer cancel()
 
-	cancel()
-
-	return err //nolint:wrapcheck
+	return chromedp.Run(ctx, actions...) //nolint:wrapcheck
 }
 
 // Context returns the current tab's context.

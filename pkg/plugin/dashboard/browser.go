@@ -24,11 +24,15 @@ const (
 	// javascriptScrollToBottom is a javascript code that will scroll to the bottom of the page.
 	javascriptScrollToBottom = `
 new Promise((resolve) => {
-    document.addEventListener("scrollend", (event) => {
+	if (window.innerHeight > document.getElementById('pageContent').scrollHeight) {
 	    resolve();
-	});
+	} else {
+	    document.addEventListener("scrollend", (event) => {
+		    resolve();
+		});
 
-	document.getElementById('pageContent').scrollIntoView({ behavior: "smooth", block: "end" });
+		document.getElementById('pageContent').scrollIntoView({ behavior: "smooth", block: "end" });
+	}
 });
 `
 
@@ -93,6 +97,10 @@ func (d *Dashboard) fetchBrowser(ctx context.Context, expandRows bool) (BrowserD
 func (d *Dashboard) fetchPanelDataFromBrowser(_ context.Context, dashURL string, expandRows bool) (BrowserData, error) {
 	tab := d.chromeInstance.NewTab(d.logger, d.conf)
 	tab.WithTimeout(1 * time.Minute)
+
+	if err := tab.Run(chromedp.EmulateViewport(1952, 1080)); err != nil {
+		return BrowserData{}, fmt.Errorf("error setting viewport: %w", err)
+	}
 
 	defer tab.Close(d.logger)
 
@@ -198,6 +206,10 @@ func (d *Dashboard) fetchTableData(_ context.Context, panelURL string) (PanelTab
 	tab := d.chromeInstance.NewTab(d.logger, d.conf)
 	tab.WithTimeout(1 * time.Minute)
 
+	if err := tab.Run(chromedp.EmulateViewport(1952, 1080)); err != nil {
+		return PanelTableData{}, fmt.Errorf("error setting viewport: %w", err)
+	}
+
 	defer tab.Close(d.logger)
 
 	// Set the OAuth token in the headers
@@ -216,7 +228,8 @@ func (d *Dashboard) fetchTableData(_ context.Context, panelURL string) (PanelTab
 	// If an error occurs on the way to fetching the CSV data, it will be sent to this channel
 	errCh := make(chan error, 1)
 
-	// Listen for download events. Downloading from JavaScript won't emit any network events.
+	// Listen for download events.
+	// Downloading from JavaScript won't emit any network events.
 	chromedp.ListenTarget(tab.Context(), func(event interface{}) {
 		if eventDownloadWillBegin, ok := event.(*browser.EventDownloadWillBegin); ok {
 			d.logger.Debug("got CSV download URL", "url", eventDownloadWillBegin.URL)
@@ -227,7 +240,7 @@ func (d *Dashboard) fetchTableData(_ context.Context, panelURL string) (PanelTab
 
 	task := chromedp.Action(
 		browser.SetDownloadBehavior(browser.SetDownloadBehaviorBehaviorAllowAndName).
-			WithDownloadPath("/dev/null").
+			WithDownloadPath("/root/cloudeteer-pdfreport-app").
 			WithEventsEnabled(true),
 	)
 	if err = tab.RunWithTimeout(2*time.Second, task); err != nil {
@@ -246,17 +259,14 @@ func (d *Dashboard) fetchTableData(_ context.Context, panelURL string) (PanelTab
 		return nil, fmt.Errorf("error clicking on apply transformations toggle: %w", err)
 	}
 
-	if err = tab.RunWithTimeout(1*time.Second, chromedp.Click(selInspectPanelDataTabApplyTransformationsToggle, chromedp.ByQuery)); err != nil && !errors.Is(err, context.DeadlineExceeded) {
-		return nil, fmt.Errorf("error clicking on apply transformations toggle: %w", err)
-	}
-
 	// Run all tasks in a goroutine.
 	// If an error occurs, it will be sent to the errCh channel.
 	// If a element can't be found, a timeout will occur and the context will be canceled.
 	go func() {
-		task = chromedp.Click(selDownloadCSVButton, chromedp.ByQuery)
-		if err := tab.Run(task); err != nil {
-			errCh <- fmt.Errorf("error fetching dashboard URL from browser %s: %w", panelURL, err)
+		// task = chromedp.Click(selDownloadCSVButton, chromedp.ByQuery)
+		task = chromedp.Evaluate(fmt.Sprintf(`document.querySelector('%s').click()`, selDownloadCSVButton), nil)
+		if err := tab.RunWithTimeout(1*time.Second, task); err != nil {
+			errCh <- fmt.Errorf("error clicking on download CSV button: %w", err)
 		}
 	}()
 
@@ -278,7 +288,7 @@ func (d *Dashboard) fetchTableData(_ context.Context, panelURL string) (PanelTab
 	case err := <-errCh:
 		return nil, fmt.Errorf("error fetching CSV data from URL from browser %s: %w", panelURL, err)
 	case <-tab.Context().Done():
-		return nil, fmt.Errorf("error fetching CSV data from URL from browser %s: %w", panelURL, tab.Context().Err())
+		return nil, fmt.Errorf("error from tab while fetching CSV data from URL from browser %s: %w", panelURL, tab.Context().Err())
 	}
 
 	close(blobURLCh)

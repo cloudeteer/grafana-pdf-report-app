@@ -76,7 +76,7 @@ func (r *Report) Generate(ctx context.Context, writer http.ResponseWriter) error
 
 				panelTable, err := r.dashboard.FetchTable(ctx, panel)
 				if err != nil {
-					errorCh <- fmt.Errorf("failed to fetch CSV data for panel %d: %w", panel.ID, err)
+					errorCh <- fmt.Errorf("failed to fetch CSV data for panel %s: %w", panel.ID, err)
 				}
 
 				panelTables[idx] = panelTable
@@ -90,7 +90,7 @@ func (r *Report) Generate(ctx context.Context, writer http.ResponseWriter) error
 
 			panelPNG, err := r.dashboard.FetchPNG(ctx, panel)
 			if err != nil {
-				errorCh <- fmt.Errorf("failed to fetch PNG data for panel %d: %w", panel.ID, err)
+				errorCh <- fmt.Errorf("failed to fetch PNG data for panel %s: %w", panel.ID, err)
 			}
 
 			panelPNGs[idx] = panelPNG
