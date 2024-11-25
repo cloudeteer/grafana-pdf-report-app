@@ -8,7 +8,7 @@ require (
 	github.com/grafana/grafana-plugin-sdk-go v0.258.0
 	github.com/magefile/mage v1.15.0
 	github.com/sethvargo/go-envconfig v1.1.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.30.0
 )
 
